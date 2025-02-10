@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { signUpAction } from "@/actions/authActions";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   email: z.string().min(2).max(50).email(),
@@ -71,16 +74,30 @@ export default function SignUpPage() {
     },
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   async function onSubmit() {
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    console.log(form.getValues());
+    const formData = new FormData();
+    formData.append("email", form.getValues().email);
+    formData.append("password", form.getValues().password);
+    startTransition(async () => {
+      const { errorMessage } = await signUpAction(formData);
+      if (!errorMessage) {
+        router.replace("/");
+        toast({
+          title: "Success",
+          description: "Successfully logged in",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    });
   }
 
   return (
@@ -147,8 +164,8 @@ export default function SignUpPage() {
                 )}
               />
             </div>
-            <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading && <Spinner className="mr-2 h-4 w-4 animate-spin" />}
+            <Button className="w-full" type="submit" disabled={isPending}>
+              {isPending && <Spinner className="mr-2 h-4 w-4 animate-spin" />}
               Sign Up
             </Button>
           </form>
