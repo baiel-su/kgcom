@@ -3,6 +3,8 @@
 import { createSupabaseServerClient } from "@/lib/auth/server";
 import { getErrorMessage } from "@/lib/utils";
 import {users} from "@/database/schema";
+import bcrypt from 'bcrypt'
+import db from "@/database/drizzle";
 
 export const signUpAction = async (formData: FormData) => {
   try {
@@ -10,8 +12,23 @@ export const signUpAction = async (formData: FormData) => {
     const data = {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
+      fullName: formData.get("fullName") as string || "", // Default empty string 
+      address: (formData.get("address") as string) || "", // Default empty string
+      phone: formData.get("phone") ? parseInt(formData.get("phone") as string, 10) : null, // Convert to integer or set null
     };
-    const { error } = await auth.signUp(data);
+    const { error, data: userData } = await auth.signUp(data);
+
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    await db.insert(users).values({
+      id: userData.user?.id, // Use Supabase UID
+      email: data.email,
+      password: hashedPassword,
+      fullName: data.fullName,
+      address: data.address, // Can be empty ""
+      phone: data.phone ?? 0, // Default to 0 if null
+    });
+
 
     if (error) throw error;
 
