@@ -4,6 +4,7 @@ import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import Navbar from "@/components/navbar/navbar";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,8 @@ export default function RootLayout({
       >
         <Navbar />
         <Theme>{children}</Theme>
-      </body>
+        <Toaster />
+      </body>{" "}
     </html>
   );
 }

@@ -23,7 +23,8 @@ import {
 import { IftarOffer, iftarOffers } from "./mockdata";
 import Link from "next/link";
 import { ResponsiveForm } from "../post/form";
-import { createClient } from "../../../../../supabase/config/supabaseClient";
+
+import { getUser } from "@/lib/auth/server";
 
 export default function IftarFinderPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -32,7 +33,8 @@ export default function IftarFinderPage() {
     (offer) => offer.date === format(date || new Date(), "yyyy-MM-dd")
   );
 
-  console.log(createClient)
+  
+
 
   return (
     <div className=" container mx-auto py-10">

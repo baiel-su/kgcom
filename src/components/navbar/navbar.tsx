@@ -1,11 +1,20 @@
-'use client';
+"use client";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { JSX, SVGProps } from "react";
+import { JSX, SVGProps, useState } from "react";
 import { usePathname } from "next/navigation";
+import { User } from "@supabase/supabase-js";
+import { createClient } from "@/lib/auth/client";
 
 export default function Navbar() {
+  const [user, setUser] = useState<User | null>(null);
+
+  const { auth } = createClient();
+
+  auth.onAuthStateChange((event, session) => {
+    setUser(session?.user || null);
+  });
 
   const pathname = usePathname();
   const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
@@ -27,7 +36,7 @@ export default function Navbar() {
             href={"/auth/sign-in"}
             className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
           >
-            Sign In
+            {user?.email}
           </Link>
         </div>
         <SheetContent side="left">
@@ -106,13 +115,15 @@ export default function Navbar() {
           </Link>
         </div>
         <div>
-          <Link
-            href="/auth/sign-in"
-            className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-            prefetch={false}
-          >
-            Sign In
-          </Link>
+          {user?.email || (
+            <Link
+              href="/auth/sign-in"
+              className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+              prefetch={false}
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </nav>
     </header>
