@@ -13,7 +13,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   address: text("address").notNull(),
   password: text("password").notNull(),
-  phone: integer("phone").notNull(),
+  phone: varchar("phone", { length: 15 }).notNull(), // Change to varchar
   lastActivityDate: date("last_activity_date").defaultNow(),
   createdAt: timestamp("created_at", {
     withTimezone: true,

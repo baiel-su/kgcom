@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Spinner } from "@radix-ui/themes";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -47,7 +46,12 @@ export default function LoginPage() {
     startTransition(async () => {
       const { errorMessage } = await signInAction(formData);
       if (!errorMessage) {
-        router.replace("/");
+        router.push("/");
+        // temporary use
+        if (typeof window !== 'undefined') {
+          window.location.reload();
+        }
+    
         toast({
           title: "Success",
           description: "Successfully logged in",

@@ -5,6 +5,7 @@ import { getErrorMessage } from "@/lib/utils";
 import {users} from "@/database/schema";
 import bcrypt from 'bcrypt'
 import db from "@/database/drizzle";
+import { redirect } from "next/navigation";
 
 export const signUpAction = async (formData: FormData) => {
   try {
@@ -62,13 +63,10 @@ export const signInAction = async (formData: FormData) => {
       await auth.signInWithPassword(data);
     if (loginError) throw loginError;
     if (!signInData.session) throw new Error("No session");
+    
     return { errorMessage: null };
-    //   if (error) {
-    //     redirect('/error')
-    //   }
 
-    //   revalidatePath('/', 'layout')
-    //   redirect('/')
+      
   } catch (error) {
     return { errorMessage: getErrorMessage(error) };
   }
@@ -80,6 +78,8 @@ export const signOutAction = async () => {
     const { error } = await auth.signOut();
     if (error) throw error;
 
+    // Refresh the page after successful sign out
+   
     return { errorMessage: null };
   } catch (error) {
     return { errorMessage: getErrorMessage(error) };

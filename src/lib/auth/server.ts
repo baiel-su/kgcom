@@ -29,7 +29,13 @@ export const createSupabaseServerClient = async () => {
 
   export async function getUser() {
     const { auth } = await createSupabaseServerClient();
-    const user = (await auth.getUser()).data.user;
   
-    return user;
+    const userObject = await auth.getUser();
+  
+    if (userObject.error) {
+      console.error(userObject.error);
+      return null;
+    }
+  
+    return userObject.data.user;
   }
