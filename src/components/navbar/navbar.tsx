@@ -2,27 +2,40 @@
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { JSX, SVGProps, useState } from "react";
+import { JSX, SVGProps, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
-import { createClient } from "@/lib/auth/client";
+import { createClient, getClientUser } from "@/lib/auth/client";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "../ui/navigation-menu";
+import SignOutButton from "../signOutButton/signOutButton";
+import UserProfileComponent from "../userProfile/userProfile";
+import { getUser } from "@/lib/auth/server";
+import { useAuth } from "@/contexts/authContext";
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/ramadan/iftar", label: "Iftar" },
+  { href: "#", label: "Services" },
+  { href: "/sds", label: "Contact" },
+];
 
 export default function Navbar() {
-  const [user, setUser] = useState<User | null>(null);
+  const {user} = getClientUser()
+  // const pathname = usePathname();
+  // const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
 
-  const { auth } = createClient();
-
-  auth.onAuthStateChange((event, session) => {
-    setUser(session?.user || null);
-  });
-
-  const pathname = usePathname();
-  const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
-
-  if (hideNavbar) {
-    return null;
-  }
+  // if (hideNavbar) {
+  //   return null;
+  // }
   return (
+    
     <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
       <Sheet>
         <div className="flex justify-between w-full lg:hidden">
@@ -32,12 +45,30 @@ export default function Navbar() {
               <span className="sr-only">Toggle navigation menu</span>
             </Button>
           </SheetTrigger>
-          <Link
-            href={"/auth/sign-in"}
-            className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-          >
-            {user?.email}
-          </Link>
+          {user ? (
+            <NavigationMenu className="w-full">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger> {user?.email}</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="flex flex-col max-w-[400px] p-4 md:w-[500px] lg:w-[600px]">
+                      <NavigationMenuLink>Edit Profile</NavigationMenuLink>
+                      <NavigationMenuLink>
+                        <SignOutButton />
+                      </NavigationMenuLink>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          ) : (
+            <Link
+              href={"/auth/sign-in"}
+              className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
         <SheetContent side="left">
           <Link href="#" className="mr-6 hidden lg:flex" prefetch={false}>
@@ -45,34 +76,16 @@ export default function Navbar() {
             <span className="sr-only">Acme Inc</span>
           </Link>
           <div className="grid gap-2 py-6">
-            <Link
-              href="/"
-              className="flex w-full items-center py-2 text-lg font-semibold"
-              prefetch={false}
-            >
-              Home
-            </Link>
-            <Link
-              href="/ramadan/iftar"
-              className="flex w-full items-center py-2 text-lg font-semibold"
-              prefetch={false}
-            >
-              Iftar
-            </Link>
-            <Link
-              href="#"
-              className="flex w-full items-center py-2 text-lg font-semibold"
-              prefetch={false}
-            >
-              Services
-            </Link>
-            <Link
-              href="#"
-              className="flex w-full items-center py-2 text-lg font-semibold"
-              prefetch={false}
-            >
-              Contact
-            </Link>
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="flex w-full items-center py-2 text-lg font-semibold"
+                prefetch={false}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </SheetContent>
       </Sheet>
@@ -85,41 +98,44 @@ export default function Navbar() {
           </Link>
         </div>
         <div>
-          <Link
-            href="/"
-            className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-            prefetch={false}
-          >
-            Home
-          </Link>
-          <Link
-            href="/ramadan/iftar"
-            className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-            prefetch={false}
-          >
-            Iftar
-          </Link>
-          <Link
-            href="#"
-            className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-            prefetch={false}
-          >
-            Services
-          </Link>
-          <Link
-            href="#"
-            className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-            prefetch={false}
-          >
-            Contact
-          </Link>
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+              prefetch={false}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
         <div>
-          {user?.email || (
+          {user ? (
+            <NavigationMenu className="w-full">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger> {user?.email}</NavigationMenuTrigger>
+                  <NavigationMenuContent className="">
+                    <ul className="flex flex-col gap-3 max-w-[400px] p-4 md:max-w-[500px] lg:max-w-[600px] lg:min-w-[120px]">
+                      <Sheet>
+                        <SheetTrigger>Edit Profile </SheetTrigger>
+                        <SheetContent>
+                          <UserProfileComponent />
+                        </SheetContent>
+                      </Sheet>
+                      <NavigationMenuLink></NavigationMenuLink>
+                      <NavigationMenuLink>
+                        <SignOutButton />
+                      </NavigationMenuLink>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          ) : (
             <Link
-              href="/auth/sign-in"
+              href={"/auth/sign-in"}
               className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-              prefetch={false}
             >
               Sign In
             </Link>
