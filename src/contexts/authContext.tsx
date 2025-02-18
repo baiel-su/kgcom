@@ -2,9 +2,9 @@
 
 import type React from "react"
 
-import { createContext, useContext, useEffect, useState } from "react"
-import type { User } from "@supabase/supabase-js"
 import { createClient } from "@/lib/auth/client"
+import type { User } from "@supabase/supabase-js"
+import { createContext, useContext, useEffect, useState } from "react"
 
 type AuthContextType = {
   user: User | null
@@ -16,22 +16,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const supabase = createClient()
-
+  const { auth } = supabase; // Destructure auth
+  
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-    })
-
+    } = auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+  
+    auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+  
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [supabase.auth.onAuthStateChange, supabase.auth.getSession])
+      subscription.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth.onAuthStateChange, auth.getSession]); 
 
   const signOut = async () => {
     await supabase.auth.signOut()

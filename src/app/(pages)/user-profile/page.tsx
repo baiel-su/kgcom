@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import fetchUserProfile from "./user-profile-server";
 
 const UserProfile: React.FC = () => {
   const [userData, setUserData] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -12,7 +12,7 @@ const UserProfile: React.FC = () => {
         const data = await fetchUserProfile();
         setUserData(data);
       } catch (error) {
-        setError((error as any).message);
+        setError((error as Error).message);
       }
     };
 

@@ -17,7 +17,6 @@ type ToasterToast = ToastProps & {
   description?: React.ReactNode
   action?: ToastActionElement
 }
-
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
   UPDATE_TOAST: "UPDATE_TOAST",
@@ -33,6 +32,8 @@ function genId() {
 }
 
 type ActionType = typeof actionTypes
+
+void actionTypes;
 
 type Action =
   | {
@@ -191,4 +192,4 @@ function useToast() {
   }
 }
 
-export { useToast, toast }
+export { toast, useToast }

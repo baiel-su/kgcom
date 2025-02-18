@@ -1,31 +1,29 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@radix-ui/themes";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Spinner } from "@radix-ui/themes";
+import Image from "next/image";
+import { useTransition } from "react";
 
-import {  LucideProps } from "lucide-react";
+import { LucideProps } from "lucide-react";
 import Link from "next/link";
 
-import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
+import { signUpAction } from "@/actions/authActions";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form";
-import { signUpAction } from "@/actions/authActions";
-import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().min(2).max(50).email(),

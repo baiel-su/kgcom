@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -19,12 +18,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
-import { IftarOffer, iftarOffers } from "./mockdata";
-import Link from "next/link";
 import { ResponsiveForm } from "../post/form";
+import { IftarOffer, iftarOffers } from "./mockdata";
 
-import { getUser } from "@/lib/auth/server";
 
 export default function IftarFinderPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());

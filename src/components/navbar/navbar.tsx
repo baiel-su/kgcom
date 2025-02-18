@@ -1,11 +1,9 @@
 "use client";
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Link from "next/link";
-import { JSX, SVGProps, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import { User } from "@supabase/supabase-js";
-import { createClient, getClientUser } from "@/lib/auth/client";
+import { JSX, SVGProps } from "react";
+import SignOutButton from "../signOutButton/signOutButton";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -14,9 +12,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "../ui/navigation-menu";
-import SignOutButton from "../signOutButton/signOutButton";
 import UserProfileComponent from "../userProfile/userProfile";
-import { getUser } from "@/lib/auth/server";
 import { useAuth } from "@/contexts/authContext";
 
 const links = [
@@ -27,7 +23,7 @@ const links = [
 ];
 
 export default function Navbar() {
-  const {user} = getClientUser()
+  const {user} = useAuth()
   // const pathname = usePathname();
   // const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
 

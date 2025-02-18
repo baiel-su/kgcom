@@ -1,11 +1,10 @@
 import {
-  integer,
+  date,
   pgTable,
-  uuid,
-  varchar,
   text,
   timestamp,
-  date,
+  uuid,
+  varchar
 } from "drizzle-orm/pg-core";
 export const users = pgTable("users", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),

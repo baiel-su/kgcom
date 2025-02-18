@@ -1,8 +1,5 @@
 "use client";
-import React, { startTransition, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { updateProfile } from "@/actions/editUserActions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,10 +11,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"; // Adjust the import path according to your project structure
 import { fetchUserData } from "@/data/userData";
-import { User } from "@supabase/supabase-js";
-import { updateProfile } from "@/actions/editUserActions";
 import { toast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import React, { startTransition, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 const UserProfileComponent: React.FC = () => {
   const form = useForm<z.infer<typeof userSchema>>({
@@ -32,20 +31,21 @@ const UserProfileComponent: React.FC = () => {
   const [userData, setUserData] = useState<z.infer<typeof userSchema> | null>(
     null
   );
+  const { setValue } = form;
+
   useEffect(() => {
     const getUserData = async () => {
       const data = await fetchUserData();
       setUserData(data);
       if (data) {
-        form.setValue("full_name", data.full_name);
-        form.setValue("address", data.address);
-        form.setValue("phone", data.phone);
+        setValue("full_name", data.full_name);
+        setValue("address", data.address);
+        setValue("phone", data.phone);
       }
     };
 
     getUserData();
-  }, []);
-  
+  }, [setValue]);
 
   console.log(userData?.phone);
 

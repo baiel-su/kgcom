@@ -1,11 +1,10 @@
 "use server";
 
+import db from "@/database/drizzle";
+import { users } from "@/database/schema";
 import { createSupabaseServerClient } from "@/lib/auth/server";
 import { getErrorMessage } from "@/lib/utils";
-import {users} from "@/database/schema";
-import bcrypt from 'bcrypt'
-import db from "@/database/drizzle";
-import { redirect } from "next/navigation";
+import bcrypt from 'bcrypt';
 
 export const signUpAction = async (formData: FormData) => {
   try {
@@ -17,17 +16,16 @@ export const signUpAction = async (formData: FormData) => {
       address: (formData.get("address") as string) || "", // Default empty string
       phone: formData.get("phone") ? parseInt(formData.get("phone") as string, 10) : null, // Convert to integer or set null
     };
-    const { error, data: userData } = await auth.signUp(data);
+    const { error } = await auth.signUp(data);
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     await db.insert(users).values({
-      id: userData.user?.id, // Use Supabase UID
       email: data.email,
       password: hashedPassword,
       fullName: data.fullName,
       address: data.address, // Can be empty ""
-      phone: data.phone ?? 0, // Default to 0 if null
+      phone: data.phone ? data.phone.toString() : "0", // Convert to string or default to "0"
     });
 
 
@@ -40,12 +38,7 @@ export const signUpAction = async (formData: FormData) => {
     if (!signInData.session) throw new Error("No session");
     return { errorMessage: null };
 
-    //   if (error) {
-    //     redirect('/error')
-    //   }
 
-    //   revalidatePath('/', 'layout')
-    //   redirect('/')
   } catch (error) {
     return { errorMessage: getErrorMessage(error) };
   }

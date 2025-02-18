@@ -1,19 +1,20 @@
 "use client";
 
-import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@radix-ui/themes";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Spinner } from "@radix-ui/themes";
+import Image from "next/image";
 
 import { LucideProps } from "lucide-react";
 
-import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
+import { signInAction } from "@/actions/authActions";
 import {
   Form,
   FormControl,
@@ -22,9 +23,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import Link from "next/link";
-import { signInAction } from "@/actions/authActions";
 import { toast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 export default function LoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -143,7 +143,7 @@ export default function LoginPage() {
             Login with Google
           </Button>
           <div className="mt-4 text-center text-sm">
-            Don't have an account?{" "}
+            Don not have an account?{" "}
             <Link className="underline" href="/auth/sign-up">
               Sign up
             </Link>
