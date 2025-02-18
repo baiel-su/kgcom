@@ -1,5 +1,6 @@
 "use client";
 
+import createPostAction from "@/actions/postActions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,30 +30,31 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { startTransition, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  name: z.string().nonempty("Name is required"),
   address: z.string().nonempty("Address is required"),
-  number: z.number().min(1, "Guests quantity must be at least 1"),
+  max_guests: z.coerce.number().min(1, "Guests quantity must be at least 1"),
   gender: z.enum(["men", "women", "mixed"]).refine((val) => val !== undefined, {
     message: "Gender is required",
   }),
 });
 
-export function ResponsiveForm() {
+export function PostFormContent() {
   const [isMobile, setIsMobile] = useState(false);
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
       address: "",
-      number: 0,
+      max_guests: 1,
+      gender: "mixed",
     },
   });
 
@@ -63,27 +65,45 @@ export function ResponsiveForm() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
-  };
+  const router = useRouter();
 
-  const FormContent = () => (
+  const onSubmit = () => {
+    const formData = new FormData();
+    formData.append("gender", form.getValues().gender);
+    formData.append("address", form.getValues().address);
+    formData.append("max_guests", form.getValues().max_guests.toString());
+    console.log(form.getValues());
+    startTransition(async () => {
+      const { errorMessage } = await createPostAction(formData);
+      if (!errorMessage) {
+        router.push("/");
+        // temporary use
+        // if (typeof window !== 'undefined') {
+        //   window.location.reload();
+        // }
+
+        toast({
+          title: "Success",
+          description: "Successfully logged in",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    });
+  };
+  // const onSubmit = (data: z.infer<typeof formSchema>) => {
+  //   console.log(data);
+  // };
+  // const FormContent = () =>
+  return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your name" {...field} />
-                </FormControl>
-                <FormMessage>{form.formState.errors.name?.message}</FormMessage>
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="address"
@@ -91,17 +111,19 @@ export function ResponsiveForm() {
               <FormItem>
                 <FormLabel>Address</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your address" {...field} />
+                  <Input
+                    // defaultValue={userData?.address}
+                    placeholder="123 Main St"
+                    {...field}
+                  />
                 </FormControl>
-                <FormMessage>
-                  {form.formState.errors.address?.message}
-                </FormMessage>
+                <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="number"
+            name="max_guests"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Guests quantity</FormLabel>
@@ -110,12 +132,19 @@ export function ResponsiveForm() {
                     type="number"
                     placeholder="Enter guests quantity"
                     {...field}
-                    value={field.value || ""}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    value={field.value || ""} // Keep this for controlled input
+                    onChange={(e) => {
+                      if (e.target.value === "") {
+                        // Check for empty input
+                        field.onChange(undefined); // Or field.onChange(null);
+                      } else {
+                        field.onChange(e.target.valueAsNumber);
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormMessage>
-                  {form.formState.errors.number?.message}
+                  {form.formState.errors.max_guests?.message}
                 </FormMessage>
               </FormItem>
             )}
@@ -157,57 +186,55 @@ export function ResponsiveForm() {
             )}
           />
         </div>
-        <Button type="submit" className="w-full">
-          Submit
-        </Button>
+        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );
 
-  if (typeof window === "undefined") {
-    return null;
-  }
+  // if (typeof window === "undefined") {
+  //   return null;
+  // }
 
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>
-          <Button>Invite guests</Button>
-        </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Fill out the form</DrawerTitle>
-            <DrawerDescription>
-              Please provide your information below.
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="p-4">
-            <FormContent />
-          </div>
-          <DrawerFooter>
-            <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    );
-  }
+  // if (isMobile) {
+  //   return (
+  //     <Drawer open={open} onOpenChange={setOpen}>
+  //       <DrawerTrigger asChild>
+  //         <Button>Invite guests</Button>
+  //       </DrawerTrigger>
+  //       <DrawerContent>
+  //         <DrawerHeader>
+  //           <DrawerTitle>Fill out the form</DrawerTitle>
+  //           <DrawerDescription>
+  //             Please provide your information below.
+  //           </DrawerDescription>
+  //         </DrawerHeader>
+  //         <div className="p-4">
+  //           <FormContent />
+  //         </div>
+  //         <DrawerFooter>
+  //           <DrawerClose asChild>
+  //             <Button variant="outline">Cancel</Button>
+  //           </DrawerClose>
+  //         </DrawerFooter>
+  //       </DrawerContent>
+  //     </Drawer>
+  //   );
+  // }
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>Invite guests</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Fill out the form</DialogTitle>
-          <DialogDescription>
-            Please provide your information below.
-          </DialogDescription>
-        </DialogHeader>
-        <FormContent />
-      </DialogContent>
-    </Dialog>
-  );
+  // return (
+  //   <Dialog open={open} onOpenChange={setOpen}>
+  //     <DialogTrigger asChild>
+  //       <Button>Invite guests</Button>
+  //     </DialogTrigger>
+  //     <DialogContent className="sm:max-w-[425px]">
+  //       <DialogHeader>
+  //         <DialogTitle>Fill out the form</DialogTitle>
+  //         <DialogDescription>
+  //           Please provide your information below.
+  //         </DialogDescription>
+  //       </DialogHeader>
+  //       <FormContent />
+  //     </DialogContent>
+  //   </Dialog>
+  // );
 }

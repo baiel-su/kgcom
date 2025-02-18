@@ -23,12 +23,11 @@ export const users = pgTable("users", {
 
 export const posts = pgTable("posts", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
-  userId: uuid("user_id").notNull().references(() => users.id),
+  user_id: uuid("user_id").notNull().references(() => users.id),
   gender: varchar("gender", { length: 255 }).notNull(),
   address: text("address").notNull(),
-  maxGuests: integer("max_guests").notNull(),
+  max_guests: integer("max_guests").notNull(),
   guests: jsonb("users").notNull().default([]), // The maximum number of guests allowed by the post creator
-  guestCount: integer("guest_count").default(0), // The current number of guests joined
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
