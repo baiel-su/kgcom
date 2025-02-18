@@ -14,6 +14,7 @@ import {
 } from "../ui/navigation-menu";
 import UserProfileComponent from "../userProfile/userProfile";
 import { useAuth } from "@/contexts/authContext";
+import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/", label: "Home" },
@@ -23,15 +24,15 @@ const links = [
 ];
 
 export default function Navbar() {
-  const {user} = useAuth()
-  // const pathname = usePathname();
-  // const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
+  const { user } = useAuth();
+  const pathname = usePathname();
+  const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
 
-  // if (hideNavbar) {
-  //   return null;
-  // }
+  if (hideNavbar) {
+    return null;
+  }
+
   return (
-    
     <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
       <Sheet>
         <div className="flex justify-between w-full lg:hidden">
@@ -45,7 +46,12 @@ export default function Navbar() {
             <NavigationMenu className="w-full">
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger> {user?.email}</NavigationMenuTrigger>
+                  <NavigationMenuTrigger
+                    onPointerMove={(e) => e.preventDefault()}
+                  >
+                    {" "}
+                    {user?.email}
+                  </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="flex flex-col max-w-[400px] p-4 md:w-[500px] lg:w-[600px]">
                       <NavigationMenuLink>Edit Profile</NavigationMenuLink>
@@ -110,7 +116,12 @@ export default function Navbar() {
             <NavigationMenu className="w-full">
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger> {user?.email}</NavigationMenuTrigger>
+                  <NavigationMenuTrigger
+                    onPointerMove={(e) => e.preventDefault()}
+                  >
+                    {" "}
+                    {user?.email}
+                  </NavigationMenuTrigger>
                   <NavigationMenuContent className="">
                     <ul className="flex flex-col gap-3 max-w-[400px] p-4 md:max-w-[500px] lg:max-w-[600px] lg:min-w-[120px]">
                       <Sheet>

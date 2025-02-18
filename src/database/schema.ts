@@ -1,5 +1,7 @@
 import {
   date,
+  integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
@@ -22,10 +24,11 @@ export const users = pgTable("users", {
 export const posts = pgTable("posts", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
   userId: uuid("user_id").notNull().references(() => users.id),
-  gender: varchar("title", { length: 255 }).notNull(),
+  gender: varchar("gender", { length: 255 }).notNull(),
   address: text("address").notNull(),
-  createdAt: timestamp("created_at", {
-    withTimezone: true,
-  }).defaultNow(),
+  maxGuests: integer("max_guests").notNull(),
+  guests: jsonb("users").notNull().default([]), // The maximum number of guests allowed by the post creator
+  guestCount: integer("guest_count").default(0), // The current number of guests joined
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 

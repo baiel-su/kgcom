@@ -15,6 +15,13 @@
       "when": 1739765113371,
       "tag": "0001_wide_doorman",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1739854021842,
+      "tag": "0002_worried_earthquake",
+      "breakpoints": true
     }
   ]
 }
