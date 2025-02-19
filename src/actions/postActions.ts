@@ -9,7 +9,7 @@ const createPostAction = async (formData: FormData) => {
     userId: formData.get("userId") as string,
     gender: formData.get("gender") as string,
     address: formData.get("address") as string,
-    users: JSON.parse(formData.get("guests") as string) || "[]", // Parse the JSON string to an array
+    guests: JSON.parse(formData.get("guests") as string) || "[]", // Parse the JSON string to an array
     max_guests: Number(formData.get("max_guests")),
   };
 
@@ -33,7 +33,7 @@ const createPostAction = async (formData: FormData) => {
       user_id: user.id,
       gender: postData.gender,
       address: postData.address,
-      users: postData.users,
+      guests: postData.guests,
       max_guests: postData.max_guests,
     });
 

@@ -53,7 +53,7 @@ export function PostFormContent() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       address: "",
-      max_guests: 1,
+      max_guests: 0,
       gender: "mixed",
     },
   });
@@ -98,9 +98,8 @@ export function PostFormContent() {
   };
   // const onSubmit = (data: z.infer<typeof formSchema>) => {
   //   console.log(data);
-  // };
-  // const FormContent = () =>
-  return (
+  // }; // return (
+  const FormContent = () => (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
@@ -128,19 +127,12 @@ export function PostFormContent() {
               <FormItem>
                 <FormLabel>Guests quantity</FormLabel>
                 <FormControl>
-                  <Input
+                <Input
                     type="number"
                     placeholder="Enter guests quantity"
                     {...field}
-                    value={field.value || ""} // Keep this for controlled input
-                    onChange={(e) => {
-                      if (e.target.value === "") {
-                        // Check for empty input
-                        field.onChange(undefined); // Or field.onChange(null);
-                      } else {
-                        field.onChange(e.target.valueAsNumber);
-                      }
-                    }}
+                    value={field.value || ""}
+                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
                   />
                 </FormControl>
                 <FormMessage>
@@ -191,50 +183,50 @@ export function PostFormContent() {
     </Form>
   );
 
-  // if (typeof window === "undefined") {
-  //   return null;
-  // }
+  if (typeof window === "undefined") {
+    return null;
+  }
 
-  // if (isMobile) {
-  //   return (
-  //     <Drawer open={open} onOpenChange={setOpen}>
-  //       <DrawerTrigger asChild>
-  //         <Button>Invite guests</Button>
-  //       </DrawerTrigger>
-  //       <DrawerContent>
-  //         <DrawerHeader>
-  //           <DrawerTitle>Fill out the form</DrawerTitle>
-  //           <DrawerDescription>
-  //             Please provide your information below.
-  //           </DrawerDescription>
-  //         </DrawerHeader>
-  //         <div className="p-4">
-  //           <FormContent />
-  //         </div>
-  //         <DrawerFooter>
-  //           <DrawerClose asChild>
-  //             <Button variant="outline">Cancel</Button>
-  //           </DrawerClose>
-  //         </DrawerFooter>
-  //       </DrawerContent>
-  //     </Drawer>
-  //   );
-  // }
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>
+          <Button>Invite guests</Button>
+        </DrawerTrigger>
+        <DrawerContent  onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DrawerHeader>
+            <DrawerTitle>Fill out the form</DrawerTitle>
+            <DrawerDescription>
+              Please provide your information below.
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="p-4">
+            <FormContent />
+          </div>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
 
-  // return (
-  //   <Dialog open={open} onOpenChange={setOpen}>
-  //     <DialogTrigger asChild>
-  //       <Button>Invite guests</Button>
-  //     </DialogTrigger>
-  //     <DialogContent className="sm:max-w-[425px]">
-  //       <DialogHeader>
-  //         <DialogTitle>Fill out the form</DialogTitle>
-  //         <DialogDescription>
-  //           Please provide your information below.
-  //         </DialogDescription>
-  //       </DialogHeader>
-  //       <FormContent />
-  //     </DialogContent>
-  //   </Dialog>
-  // );
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>Invite guests</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]"  onOpenAutoFocus={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle>Fill out the form</DialogTitle>
+          <DialogDescription>
+            Please provide your information below.
+          </DialogDescription>
+        </DialogHeader>
+        <FormContent />
+      </DialogContent>
+    </Dialog>
+  );
 }
