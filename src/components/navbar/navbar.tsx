@@ -25,6 +25,7 @@ const links = [
 
 export default function Navbar() {
   const { user } = useAuth();
+  console.log(user);
   const pathname = usePathname();
   const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
 

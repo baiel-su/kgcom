@@ -43,7 +43,7 @@ const CreatePost = () => {
     formData.append("gender", form.getValues().gender);
     formData.append("address", form.getValues().address);
     formData.append("max_guests", form.getValues().max_guests.toString());
-    console.log(form.getValues());
+    // console.log(form.getValues());
     startTransition(async () => {
       const { errorMessage } = await createPostAction(formData);
       if (!errorMessage) {

@@ -16,11 +16,13 @@ export const signUpAction = async (formData: FormData) => {
       address: (formData.get("address") as string) || "", // Default empty string
       phone: formData.get("phone") ? parseInt(formData.get("phone") as string, 10) : null, // Convert to integer or set null
     };
-    const { error } = await auth.signUp(data);
+    const { data: signUpData, error } = await auth.signUp(data);
+
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     await db.insert(users).values({
+      id: signUpData.user ? signUpData.user.id : "", 
       email: data.email,
       password: hashedPassword,
       fullName: data.fullName,

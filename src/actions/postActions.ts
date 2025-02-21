@@ -1,6 +1,9 @@
 "use server";
 
+import db from "@/database/drizzle";
+import { posts, postGuests } from "@/database/schema";
 import { createSupabaseServerClient } from "@/lib/auth/server";
+import { eq } from "drizzle-orm";
 
 const createPostAction = async (formData: FormData) => {
   const supabase = await createSupabaseServerClient();
@@ -9,7 +12,6 @@ const createPostAction = async (formData: FormData) => {
     userId: formData.get("userId") as string,
     gender: formData.get("gender") as string,
     address: formData.get("address") as string,
-    guests: JSON.parse(formData.get("guests") as string) || "[]", // Parse the JSON string to an array
     max_guests: Number(formData.get("max_guests")),
   };
 
@@ -33,7 +35,6 @@ const createPostAction = async (formData: FormData) => {
       user_id: user.id,
       gender: postData.gender,
       address: postData.address,
-      guests: postData.guests,
       max_guests: postData.max_guests,
     });
 
@@ -50,57 +51,6 @@ const createPostAction = async (formData: FormData) => {
 };
 
 export default createPostAction;
-
-export const addMyNameAction = async (formData: FormData) => {
-  const supabase = await createSupabaseServerClient();
-
-  const data = {
-    userId: formData.get("userId") as string,
-    postId: formData.get("postId") as string,
-  };
-
-  // Check if the user is authenticated
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    return { errorMessage: "User not authenticated" };
-  }
-
-  try {
-    // Fetch the existing post
-    const { data: post, error: fetchError } = await supabase
-      .from("posts")
-      .select("users")
-      .eq("id", data.postId)
-      .single();
-
-    if (fetchError || !post) {
-      throw new Error(fetchError ? fetchError.message : "Post not found");
-    }
-
-    // Add the user ID to the users array
-    const updatedUsers = [...post.users, user.id];
-
-    // Update the post with the new users array
-    const { error: updateError } = await supabase
-      .from("posts")
-      .update({ users: updatedUsers })
-      .eq("id", data.postId);
-
-    if (updateError) throw new Error(updateError.message);
-
-    return { errorMessage: null };
-  } catch (error) {
-    console.error("AddMyNameAction error:", error);
-    return {
-      errorMessage:
-        error instanceof Error ? error.message : "An unexpected error occurred",
-    };
-  }
-};
 
 export const fetchPostsAction = async () => {
   const supabase = await createSupabaseServerClient();
@@ -168,3 +118,99 @@ export const fetchSinglePostAction = async (
     };
   }
 };
+
+export async function addMyNameAction({
+  postId,
+  groupSize,
+}: {
+  postId: string;
+  groupSize: number;
+}) {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { success: false, message: "Unauthorized: Please log in" };
+    }
+
+    const userId = user.id;
+
+    if (!postId || groupSize <= 0) {
+      return { success: false, message: "Invalid input data" };
+    }
+
+    // Fetch post max_guests
+    const { data: post, error: postError } = await supabase
+      .from("posts")
+      .select("max_guests")
+      .eq("id", postId)
+      .single();
+
+    if (postError) {
+      console.error("Error fetching post:", postError);
+      return { success: false, message: "Error fetching post details" };
+    }
+
+    // Fetch total guests already joined
+    const { data: joinedGuests, error: guestsError } = await supabase
+      .from("post_guests")
+      .select("user_id, group_size")
+      .eq("post_id", postId);
+
+    if (guestsError) {
+      console.error("Error fetching guests:", guestsError);
+      return { success: false, message: "Error fetching guest data" };
+    }
+
+    // Calculate current total guests
+    const totalJoined = joinedGuests.reduce((sum, g) => sum + g.group_size, 0);
+    const existingEntry = joinedGuests.find(g => g.user_id === userId);
+    const previousGroupSize = existingEntry ? existingEntry.group_size : 0;
+
+    // Calculate available seats considering previous groupSize
+    const seatsOpen = post.max_guests - (totalJoined - previousGroupSize);
+
+    // Check if the new group size is valid
+    if (groupSize > seatsOpen) {
+      return { success: false, message: `Not enough seats available. Only ${seatsOpen} available.` };
+    }
+
+    if (existingEntry) {
+      // Update existing entry
+      const { error: updateError } = await supabase
+        .from("post_guests")
+        .update({ group_size: groupSize })
+        .eq("post_id", postId)
+        .eq("user_id", userId);
+
+      if (updateError) {
+        console.error("Error updating entry:", updateError);
+        return { success: false, message: "Error updating group size" };
+      }
+    } else {
+      // Insert new entry
+      const { error: insertError } = await supabase.from("post_guests").insert({
+        post_id: postId,
+        user_id: userId,
+        group_size: groupSize,
+      });
+
+      if (insertError) {
+        console.error("Error inserting post guest:", insertError);
+        return { success: false, message: "Error joining the post" };
+      }
+    }
+
+    return { success: true, message: "Successfully joined or updated the post" };
+  } catch (error) {
+    console.error("Error:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+}

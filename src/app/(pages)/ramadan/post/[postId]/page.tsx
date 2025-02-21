@@ -2,29 +2,72 @@
 
 "use client";
 
-import { useFetchPost } from "@/hooks/use-fetch-single-post";
-import { useParams } from "next/navigation";
-import { useState } from "react";
+import { addMyNameAction } from "@/actions/postActions";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@radix-ui/themes/components/button";
+import { useFetchPost } from "@/hooks/use-fetch-single-post";
+import { toast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useParams, useRouter } from "next/navigation";
+import { startTransition } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+const formSchema = z.object({
+  groupSize: z.coerce.number().min(1, "Guests quantity must be at least 1"),
+});
 
 export default function PostClient() {
-  const { postId } = useParams();
-  const { post, loading, error } = useFetchPost(postId as string);
-  const [inputValue, setInputValue] = useState("");
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      groupSize: 0,
+    },
+  });
+  const { postId } = useParams<{ postId: string }>();
+  const { post, loading, error } = useFetchPost(postId as string | undefined);
+  const router = useRouter();
+  // console.log(postId)
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    console.log("Submitted:", inputValue, "Post ID:", post?.id);
-    // Add your form submission logic here
+  const onSubmit = () => {
+    startTransition(async () => {
+      const { success, message } = await addMyNameAction({
+        postId,
+        groupSize: form.getValues().groupSize,
+      });
+      if (success) {
+        // router.push("/");
+  
+        toast({
+          title: "Success",
+          description: "Successfully joined the post",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: message,
+          variant: "destructive",
+        });
+      }
+    });
   };
+  
 
   if (loading) {
     return <div>Loading...</div>;
@@ -42,7 +85,9 @@ export default function PostClient() {
     <div className="p-4 max-w-xl mx-auto font-sans">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-gray-900">{post.user.full_name}</CardTitle>
+          <CardTitle className="text-2xl text-gray-900">
+            {post.user.full_name}
+          </CardTitle>
           <CardDescription className="text-gray-600">
             by {post.user.full_name}
           </CardDescription>
@@ -50,11 +95,40 @@ export default function PostClient() {
         <CardContent className="space-y-4">
           <p className="text-gray-700">Gender: {post.gender}</p>
           <p className="text-gray-700">Address: {post.address}</p>
-          <p className="text-gray-700">Max Guests: {post.max_guests}</p>
-          {/* <p className="text-gray-700">Guests: {post.guests.join(", ")}</p> */}
+          <p className="text-gray-700">
+            Number of guests invited: {post.max_guests}
+          </p>
           <p className="text-gray-700">Phone: {post.user.phone}</p>
-          {/* <p className="text-gray-700">Created At: {new Date(post.createdAt).toLocaleString()}</p> */}
-        </CardContent>  
+          <Form {...form}>
+            <form
+              className="space-y-4"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <FormField
+                control={form.control}
+                name="groupSize"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Guests quantity</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter guests quantity"
+                        {...field}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      />
+                    </FormControl>
+                    <FormMessage>
+                      {form.formState.errors.groupSize?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Submit</Button>
+            </form>
+          </Form>
+        </CardContent>
       </Card>
     </div>
   );

@@ -13,7 +13,7 @@ export default function PostComponent({ postId }: PostComponentProps) {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    console.log('Submitted:', inputValue, 'Post ID:', postId);
+    // console.log('Submitted:', inputValue, 'Post ID:', postId);
     // Add your form submission logic here
   };
 

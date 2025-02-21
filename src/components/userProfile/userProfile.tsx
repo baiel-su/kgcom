@@ -33,9 +33,12 @@ const UserProfileComponent: React.FC = () => {
   );
   const { setValue } = form;
 
+  console.log(userData);  
+
   useEffect(() => {
     const getUserData = async () => {
       const data = await fetchUserData();
+      console.log(data);
       setUserData(data);
       if (data) {
         setValue("full_name", data.full_name);
@@ -47,7 +50,6 @@ const UserProfileComponent: React.FC = () => {
     getUserData();
   }, [setValue]);
 
-  console.log(userData?.phone);
 
   const router = useRouter();
   const onSubmit = (values: z.infer<typeof userSchema>) => {

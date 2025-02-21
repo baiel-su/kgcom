@@ -1,13 +1,11 @@
 import {
-  pgTable,
-  uuid,
-  varchar,
-  text,
-  integer,
-  jsonb,
-  timestamp,
   date,
-  primaryKey,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
