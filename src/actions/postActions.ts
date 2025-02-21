@@ -128,3 +128,43 @@ export const fetchPostsAction = async () => {
     };
   }
 };
+
+export const fetchSinglePostAction = async (
+  postId: string
+): Promise<{
+  post: any | null; // Replace 'any' with a more specific type if you have a Post interface
+  errorMessage: string | null;
+}> => {
+  const supabase = await createSupabaseServerClient();
+
+  try {
+    const { data: post, error: fetchError } = await supabase
+      .from("posts")
+      .select(
+        `
+        *,
+        user:users (
+          full_name,
+          phone
+        )
+      `
+      )
+      .eq("id", postId) // Filter by postId
+      .single(); // Expect a single result
+
+    if (fetchError) throw new Error(fetchError.message);
+
+    if (!post) {
+      return { post: null, errorMessage: "Post not found" };
+    }
+
+    return { post, errorMessage: null };
+  } catch (error) {
+    console.error("FetchSinglePostAction error:", error);
+    return {
+      post: null,
+      errorMessage:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+};

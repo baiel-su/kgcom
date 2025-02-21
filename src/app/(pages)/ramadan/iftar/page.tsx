@@ -20,10 +20,9 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-import { PostFormContent } from "../post/form";
 import useFetchPosts, { Post } from "@/hooks/use-fetch-posts";
-import { convertToCentralTime } from "@/lib/convertTime";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 export default function IftarFinderPage() {
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -32,15 +31,15 @@ export default function IftarFinderPage() {
 
   useEffect(() => {
     if (posts && date) {
-      const formattedDate = dayjs(date).format('YYYY-MM-DD'); // Format the selected date
+      const formattedDate = dayjs(date).format("YYYY-MM-DD"); // Format the selected date
 
       const filtered = posts.filter((post) => {
-        const postDate = dayjs(post.createdAt).format('YYYY-MM-DD'); // Assuming createdAt is in YYYY-MM-DD format
+        const postDate = dayjs(post.createdAt).format("YYYY-MM-DD"); // Assuming createdAt is in YYYY-MM-DD format
         return postDate === formattedDate;
       });
       setFilteredPosts(filtered);
     } else {
-        setFilteredPosts(posts); //show all posts if no date is selected.
+      setFilteredPosts(posts); //show all posts if no date is selected.
     }
   }, [posts, date]);
 
@@ -78,7 +77,9 @@ export default function IftarFinderPage() {
               />
             </PopoverContent>
           </Popover>
-          <PostFormContent />
+          <Link href="/ramadan/post/create-post">
+            <Button>Host an Iftar</Button>
+          </Link>
         </div>
 
         {filteredPosts && filteredPosts?.length > 0 ? (
@@ -115,14 +116,11 @@ function IftarCard({ offer }: { offer: any }) {
         <h3 className="mb-2">
           Gender: <span>{offer.gender}</span>
         </h3>
-        <Button className="place-items-end">Add my name</Button>
+        <Link href={`/ramadan/post/${offer.id}`} as={`/ramadan/post/${offer.id}`}>
+          <Button className="place-items-end">Add my name</Button>
+        </Link>
 
-        {/* <h3 className="font-semibold mb-2">Guests:</h3>
-        <ul className="list-disc list-inside">
-          {offer?.users?.map((user: string, index: number) => (
-            <li key={index}>{user}</li>
-          ))}
-        </ul> */}
+       
       </CardContent>
     </Card>
   );
