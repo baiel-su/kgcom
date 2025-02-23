@@ -161,7 +161,9 @@ export default function LoginPage() {
                 {isPending && <Spinner className="mr-2 h-4 w-4 animate-spin" />}
                 Sign In
               </Button>
-              <Link href="/auth/reset-password">Forgot Password?</Link>
+                <Link href="/auth/reset-password" className="text-sm text-blue-500 hover:underline mt-2">
+                Forgot Password?
+                </Link>
             </form>
           </Form>
           {/* <hr /> */}

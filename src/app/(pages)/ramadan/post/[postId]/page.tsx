@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { useFetchPost } from "@/hooks/use-fetch-single-post";
 import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { startTransition } from "react";
@@ -114,7 +115,7 @@ export default function PostClient() {
           </p>
           <p>
             <label className="font-semibold">Hosting Date: </label>
-            <span>{post.host_date}</span>
+            <span>{dayjs(post.host_date).format("MM-DD-YYYY")}</span>
           </p>
           <p className="text-gray-700">
             <label className="font-semibold">Phone: </label>

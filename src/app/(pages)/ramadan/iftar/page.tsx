@@ -31,10 +31,10 @@ export default function IftarFinderPage() {
 
   useEffect(() => {
     if (posts && date) {
-      const formattedDate = dayjs(date).format("YYYY-MM-DD"); // Format the selected date
+      const formattedDate = dayjs(date).format("MM-DD-YYYY"); // Format the selected date
 
       const filtered = posts.filter((post) => {
-        const postDate = dayjs(post.createdAt).format("YYYY-MM-DD"); // Assuming createdAt is in YYYY-MM-DD format
+        const postDate = dayjs(post.host_date).format("MM-DD-YYYY"); // Assuming createdAt is in YYYY-MM-DD format
         return postDate === formattedDate;
       });
       setFilteredPosts(filtered);
@@ -51,7 +51,7 @@ export default function IftarFinderPage() {
     return <div>Error: {error}</div>;
   }
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 px-4">
       <h1 className="text-4xl font-bold">Iftar Schedule</h1>
       <div className="py-10">
         <div className="flex gap-5 mb-8">
@@ -110,8 +110,11 @@ function IftarCard({ offer }: { offer: any }) {
         <CardDescription>Address: {offer.address}</CardDescription>
       </CardHeader>
       <CardContent>
-        <h3 className="mb-2">
+        {/* <h3 className="mb-2">
           Phone: <span>+1{offer.user.phone}</span>
+        </h3> */}
+        <h3 className="mb-2">
+          Hosting date: <span>{dayjs(offer.host_date).format("MM-DD-YYYY")}</span>
         </h3>
         <h3 className="mb-2">
           Gender: <span>{offer.gender}</span>

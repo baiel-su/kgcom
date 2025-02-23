@@ -84,7 +84,7 @@ export default function SignUpPage() {
       if (!errorMessage) {
         router.replace("/");
         // temporary use
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           window.location.reload();
         }
         toast({
@@ -242,7 +242,12 @@ export default function SignUpPage() {
                 {isPending && <Spinner className="mr-2 h-4 w-4 animate-spin" />}
                 Sign Up
               </Button>
-              <Link href="/auth/reset-password">Forgot Password?</Link>
+              <Link
+                href="/auth/reset-password"
+                className="text-sm text-blue-500 hover:underline mt-2"
+              >
+                Forgot Password?
+              </Link>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">

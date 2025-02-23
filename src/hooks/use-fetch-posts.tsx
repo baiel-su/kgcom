@@ -6,12 +6,20 @@ export interface Post {
   gender: string;
   address: string;
   max_guests: number;
-  guests: string[]; // Assuming guests is an array of strings (user IDs or names)
+  post_guests: {
+    group_size: number;
+    user: {
+      id: string;
+      full_name: string;
+      phone: string;
+    };
+  }[];
   user: {
     full_name: string;
     phone: string;
   };
   createdAt: string;
+  host_date: string;
 }
 
 interface UseFetchPostsResult {
