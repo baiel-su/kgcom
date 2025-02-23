@@ -3,9 +3,23 @@
 import { useEffect, useState } from "react";
 
 export default function PrayerTimes() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  interface PrayerTime {
+    date: {
+      gregorian: {
+        date: string;
+      };
+    };
+    timings: {
+      Fajr: string;
+      Dhuhr: string;
+      Asr: string;
+      Maghrib: string;
+      Isha: string;
+    };
+  }
+
+  const [data, setData] = useState<PrayerTime[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchPrayerTimes() {
@@ -25,11 +39,13 @@ export default function PrayerTimes() {
 
         const result = await response.json();
         setData(result.data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
+      } 
     }
 
     fetchPrayerTimes();
@@ -55,7 +71,7 @@ export default function PrayerTimes() {
             </tr>
           </thead>
           <tbody>
-            {data?.map((day: any, index: number) => (
+            {data?.map((day, index) => (
               <tr key={index}>
                 <td className="border border-gray-300 p-2">
                   {day.date.gregorian.date}

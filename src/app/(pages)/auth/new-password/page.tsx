@@ -10,17 +10,17 @@ import { updatePassword } from "@/actions/authActions";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
+import { Eye, EyeClosed } from "lucide-react";
 import { useState, useTransition } from "react";
-import { EyeClosed, Eye } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const ResetEmailSchema = z.object({
+const formSchema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
@@ -36,7 +36,8 @@ const ResetEmailSchema = z.object({
 });
 
 const NewPassword = () => {
-  const form = useForm<z.infer<typeof ResetEmailSchema>>({
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       password: "",
     },
@@ -81,34 +82,36 @@ const NewPassword = () => {
     <div className="md:w-[400px] m-auto md:border p-4 rounded-xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            placeholder="******"
-                            required
-                            {...field}
-                            type={type}
-                          />
-                          <span
-                            onClick={handleToggle}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
-                          >
-                            {icon}
-                          </span>
-                        </div>
-                      </FormControl>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      placeholder="******"
+                      required
+                      {...field}
+                      type={type}
+                    />
+                    <span
+                      onClick={handleToggle}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                    >
+                      {icon}
+                    </span>
+                  </div>
+                </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-          <Button type="submit">Submit</Button>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" disabled={isPending}>
+            Submit
+          </Button>
         </form>
       </Form>
     </div>

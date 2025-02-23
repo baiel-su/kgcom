@@ -47,7 +47,7 @@ const useFetchPosts = (): UseFetchPostsResult => {
       } else {
         setPosts(fetchedPosts);
       }
-    } catch (err: any) { // Catch any unexpected errors
+    } catch (err) { // Catch any unexpected errors
       console.error("Error in useFetchPosts:", err);
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
       setPosts([]); // Clear posts on error

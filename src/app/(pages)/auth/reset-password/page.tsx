@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -19,19 +18,17 @@ import {
 } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 import { useTransition } from "react";
-
-const ResetEmailSchema = z.object({
-  email: z.string().email(),
-});
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const ResetPassword = () => {
-  const form = useForm<z.infer<typeof ResetEmailSchema>>({
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
     },
   });
-    const [isPending, startTransition] = useTransition();
-  
+  const [isPending, startTransition] = useTransition();
+
   const onSubmit = async () => {
     const formData = new FormData();
     formData.append("email", form.getValues().email);
@@ -62,7 +59,9 @@ const ResetPassword = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
-                <FormDescription>Enter your email to send reset link</FormDescription>
+                <FormDescription>
+                  Enter your email to send reset link
+                </FormDescription>
                 <FormControl>
                   <Input placeholder="m@example.com" {...field} />
                 </FormControl>
@@ -70,7 +69,9 @@ const ResetPassword = () => {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={isPending}>
+            Submit
+          </Button>
         </form>
       </Form>
     </div>
@@ -78,3 +79,8 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
+
+
+const formSchema = z.object({
+  email: z.string().email(),
+});

@@ -26,7 +26,7 @@ import Link from "next/link";
 
 export default function IftarFinderPage() {
   const [date, setDate] = useState<Date | undefined>(undefined);
-  const { posts, error, loading } = useFetchPosts();
+  const { posts, error } = useFetchPosts();
   const [filteredPosts, setFilteredPosts] = useState<Post[] | null>(null);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function IftarFinderPage() {
   );
 }
 
-function IftarCard({ offer }: { offer: any }) {
+function IftarCard({ offer }: { offer: Post }) {
   return (
     <Card>
       <CardHeader>
@@ -128,3 +128,5 @@ function IftarCard({ offer }: { offer: any }) {
     </Card>
   );
 }
+
+

@@ -78,12 +78,7 @@ export const fetchPostsAction = async () => {
   }
 };
 
-export const fetchSinglePostAction = async (
-  postId: string
-): Promise<{
-  post: any | null; // Replace 'any' with a more specific type if you have a Post interface
-  errorMessage: string | null;
-}> => {
+export const fetchSinglePostAction = async (postId: string) => {
   const supabase = await createSupabaseServerClient();
 
   try {

@@ -4,13 +4,7 @@
 
 import { addMyNameAction } from "@/actions/postActions";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -25,14 +19,11 @@ import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { startTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
-  groupSize: z.coerce.number().min(1, "Guests quantity must be at least 1"),
-});
 
 export default function PostClient() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,8 +33,7 @@ export default function PostClient() {
     },
   });
   const { postId } = useParams<{ postId: string }>();
-  const { post, loading, error } = useFetchPost(postId as string | undefined);
-  const router = useRouter();
+  const { post, error } = useFetchPost(postId as string | undefined);
   // console.log(postId)
 
   const onSubmit = () => {
@@ -53,8 +43,10 @@ export default function PostClient() {
         groupSize: form.getValues().groupSize,
       });
       if (success) {
-        // router.push("/");
-
+        // temporary use
+        if (typeof window !== "undefined") {
+          window.location.reload();
+        }
         toast({
           title: "Success",
           description: "Successfully joined the post",
@@ -69,10 +61,6 @@ export default function PostClient() {
       }
     });
   };
-
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -184,3 +172,7 @@ export default function PostClient() {
     </div>
   );
 }
+
+const formSchema = z.object({
+  groupSize: z.coerce.number().min(1, "Guests quantity must be at least 1"),
+});
