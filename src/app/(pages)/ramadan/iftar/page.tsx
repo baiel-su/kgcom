@@ -43,9 +43,9 @@ export default function IftarFinderPage() {
     }
   }, [posts, date]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -111,7 +111,7 @@ function IftarCard({ offer }: { offer: any }) {
       </CardHeader>
       <CardContent>
         <h3 className="mb-2">
-          Phone: <span>{offer.user.phone}</span>
+          Phone: <span>+1{offer.user.phone}</span>
         </h3>
         <h3 className="mb-2">
           Gender: <span>{offer.gender}</span>

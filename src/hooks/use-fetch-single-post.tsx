@@ -1,22 +1,30 @@
 // app/hooks/useFetchPost.ts
 
-'use client';
+"use client";
 
-import { fetchSinglePostAction } from '@/actions/postActions';
-import { useState, useEffect } from 'react';
+import { fetchSinglePostAction } from "@/actions/postActions";
+import { useState, useEffect } from "react";
 
 export interface Post {
-    id: string;
-    gender: string;
-    address: string;
-    max_guests: number;
-    guests: string[]; // Assuming guests is an array of strings (user IDs or names)
+  id: string;
+  gender: string;
+  address: string;
+  max_guests: number;
+  post_guests: {
+    group_size: number;
     user: {
+      id: string;
       full_name: string;
       phone: string;
     };
-    createdAt: string;
-  }
+  }[];
+  user: {
+    full_name: string;
+    phone: string;
+  };
+  createdAt: string;
+  host_date: string;
+}
 
 export const useFetchPost = (postId: string | undefined) => {
   const [post, setPost] = useState<Post | null>(null);
@@ -27,7 +35,7 @@ export const useFetchPost = (postId: string | undefined) => {
     const fetchData = async () => {
       if (!postId) {
         setLoading(false);
-        setError('Post ID is undefined.');
+        setError("Post ID is undefined.");
         return;
       }
 
@@ -35,9 +43,7 @@ export const useFetchPost = (postId: string | undefined) => {
       setError(null);
 
       try {
-        const { post: fetchedPost, errorMessage } = await fetchSinglePostAction(
-          postId
-        );
+        const { post: fetchedPost, errorMessage } = await fetchSinglePostAction(postId);
 
         if (errorMessage) {
           setError(errorMessage);
@@ -45,7 +51,7 @@ export const useFetchPost = (postId: string | undefined) => {
           setPost(fetchedPost);
         }
       } catch (err) {
-        setError('Failed to fetch post.');
+        setError("Failed to fetch post.");
         console.error(err);
       } finally {
         setLoading(false);

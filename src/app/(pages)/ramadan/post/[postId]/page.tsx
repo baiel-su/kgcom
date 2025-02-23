@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { useFetchPost } from "@/hooks/use-fetch-single-post";
 import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { startTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -52,7 +53,7 @@ export default function PostClient() {
       });
       if (success) {
         // router.push("/");
-  
+
         toast({
           title: "Success",
           description: "Successfully joined the post",
@@ -67,11 +68,10 @@ export default function PostClient() {
       }
     });
   };
-  
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -86,24 +86,74 @@ export default function PostClient() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl text-gray-900">
-            {post.user.full_name}
+            Host: {post.user.full_name}
           </CardTitle>
-          <CardDescription className="text-gray-600">
-            by {post.user.full_name}
-          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-gray-700">Gender: {post.gender}</p>
-          <p className="text-gray-700">Address: {post.address}</p>
+        <CardContent className="space-y-1">
           <p className="text-gray-700">
-            Number of guests invited: {post.max_guests}
+            <label className="font-semibold">Gender: </label>
+            <span></span>
+            {post.gender}
           </p>
-          <p className="text-gray-700">Phone: {post.user.phone}</p>
-          <Form {...form}>
-            <form
-              className="space-y-4"
-              onSubmit={form.handleSubmit(onSubmit)}
+          <p className="text-gray-700">
+            <label className="font-semibold">Address: </label>
+            <Link
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                post.address
+              )}`}
+              className="text-blue-500 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
             >
+              {post.address}
+            </Link>
+          </p>
+          <p className="text-gray-700">
+            <label className="font-semibold">Number of guests invited: </label>
+            <span>{post.max_guests}</span>
+          </p>
+          <p>
+            <label className="font-semibold">Hosting Date: </label>
+            <span>{post.host_date}</span>
+          </p>
+          <p className="text-gray-700">
+            <label className="font-semibold">Phone: </label>
+            <Link
+              href={`https://wa.me/+1${post.user.phone}`}
+              className="text-blue-500 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              +1{post.user.phone}
+            </Link>
+          </p>
+          {post.post_guests.length > 0 &&
+            post.post_guests.map((guest, index) => (
+              <div key={index} className="py-2">
+                <p className="text-gray-700">
+                  <label className="font-semibold">Guest {index + 1}: </label>
+                  <span>{guest.user.full_name}</span>
+                </p>
+                <p className="text-gray-700">
+                  <label className="font-semibold">Group {index + 1}: </label>
+                  <span>{guest.group_size} guest(s)</span>
+                </p>
+                <p>
+                  <label className="font-semibold">Guest: </label>
+                  <Link
+                    href={`https://wa.me/+1${guest.user.phone}`}
+                    className="text-blue-500 hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    +1{guest.user.phone}
+                  </Link>
+                </p>
+              </div>
+            ))}
+
+          <Form {...form}>
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
                 name="groupSize"

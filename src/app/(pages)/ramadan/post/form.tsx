@@ -84,7 +84,7 @@ export function PostFormContent() {
 
         toast({
           title: "Success",
-          description: "Successfully logged in",
+          description: "Successfully created a post",
           variant: "default",
         });
       } else {
@@ -121,6 +121,27 @@ export function PostFormContent() {
             )}
           />
           <FormField
+            control={form.control}
+            name="max_guests"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Guests quantity</FormLabel>
+                <FormControl>
+                <Input
+                    type="number"
+                    placeholder="Enter guests quantity"
+                    {...field}
+                    value={field.value || ""}
+                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.max_guests?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+           <FormField
             control={form.control}
             name="max_guests"
             render={({ field }) => (

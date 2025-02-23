@@ -1,28 +1,41 @@
-"use client"
+"use client";
 import createPostAction from "@/actions/postActions";
+import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import { useRouter } from "next/navigation";
 import { startTransition } from "react";
-import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+// import { format } from "path";
 
 const formSchema = z.object({
   address: z.string().nonempty("Address is required"),
   max_guests: z.coerce.number().min(1, "Guests quantity must be at least 1"),
   gender: z.enum(["men", "women", "mixed"]).refine((val) => val !== undefined, {
     message: "Gender is required",
+  }),
+  hostDate: z.date().refine((val) => val !== undefined, {
+    message: "Host date is required",
   }),
 });
 
@@ -33,6 +46,7 @@ const CreatePost = () => {
       address: "",
       max_guests: 0,
       gender: "mixed",
+      hostDate: new Date(),
     },
   });
 
@@ -43,6 +57,7 @@ const CreatePost = () => {
     formData.append("gender", form.getValues().gender);
     formData.append("address", form.getValues().address);
     formData.append("max_guests", form.getValues().max_guests.toString());
+    formData.append("hostDate", form.getValues().hostDate.toString());
     // console.log(form.getValues());
     startTransition(async () => {
       const { errorMessage } = await createPostAction(formData);
@@ -55,7 +70,7 @@ const CreatePost = () => {
 
         toast({
           title: "Success",
-          description: "Successfully logged in",
+          description: "Successfully created a post",
           variant: "default",
         });
       } else {
@@ -70,7 +85,9 @@ const CreatePost = () => {
   return (
     <div className="max-w-lg mx-auto p-4 sm:p-6 lg:p-8">
       <h1 className="text-2xl font-bold mb-4">Create a New Post</h1>
-      <p className="mb-6 text-gray-600">Fill out the form below to create a new post for the Ramadan event.</p>
+      <p className="mb-6 text-gray-600">
+        Fill out the form below to create a new post for the Ramadan event.
+      </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
@@ -105,6 +122,47 @@ const CreatePost = () => {
                       value={field.value || ""}
                       onChange={(e) => field.onChange(e.target.valueAsNumber)}
                     />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors.max_guests?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="hostDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-1">
+                  <FormLabel>Hosting date</FormLabel>
+                  <FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[280px] justify-start text-left font-normal",
+                            !form.watch("hostDate") && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {form.watch("hostDate") ? (
+                            format(form.watch("hostDate"), "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                          disabled={(date) => date < new Date()}
+                        />
+                        </PopoverContent>
+                    </Popover>
                   </FormControl>
                   <FormMessage>
                     {form.formState.errors.max_guests?.message}

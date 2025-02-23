@@ -39,7 +39,15 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const protectedRoutes = ["/post"];
+  const protectedRoutes = ["/ramadan/post/[postId]"];
+  const dynamicProtectedRoutes = ["/ramadan/post/"];
+  
+  if (dynamicProtectedRoutes.some(route => request.nextUrl.pathname.startsWith(route)) && !user) {
+    // No user, redirect to the login page
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/sign-in";
+    return NextResponse.redirect(url);
+  }
   const publicRoutes = ["/auth/sign-in", "/auth/sign-up"];
 
   if (protectedRoutes.includes(request.nextUrl.pathname) && !user) {

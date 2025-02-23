@@ -46,10 +46,10 @@ export default function LoginPage() {
       if (!errorMessage) {
         router.push("/");
         // temporary use
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           window.location.reload();
         }
-    
+
         toast({
           title: "Success",
           description: "Successfully logged in",
@@ -103,7 +103,7 @@ export default function LoginPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input placeholder="m@example.com" {...field} />
                       </FormControl>
@@ -133,6 +133,7 @@ export default function LoginPage() {
                 {isPending && <Spinner className="mr-2 h-4 w-4 animate-spin" />}
                 Sign In
               </Button>
+              <Link href="/auth/reset-password">Forgot Password?</Link>
             </form>
           </Form>
           {/* <hr /> */}

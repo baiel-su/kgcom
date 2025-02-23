@@ -13,6 +13,7 @@ const createPostAction = async (formData: FormData) => {
     gender: formData.get("gender") as string,
     address: formData.get("address") as string,
     max_guests: Number(formData.get("max_guests")),
+    hostDate: new Date(formData.get("hostDate") as string),
   };
 
   if (isNaN(postData.max_guests)) {
@@ -36,6 +37,7 @@ const createPostAction = async (formData: FormData) => {
       gender: postData.gender,
       address: postData.address,
       max_guests: postData.max_guests,
+      host_date: postData.hostDate,
     });
 
     if (insertError) throw new Error(insertError.message);
@@ -96,6 +98,14 @@ export const fetchSinglePostAction = async (
         user:users (
           full_name,
           phone
+        ),
+        post_guests (
+          group_size,
+          user:users (
+            id,
+            full_name,
+            phone
+          )
         )
       `
       )
@@ -168,7 +178,7 @@ export async function addMyNameAction({
 
     // Calculate current total guests
     const totalJoined = joinedGuests.reduce((sum, g) => sum + g.group_size, 0);
-    const existingEntry = joinedGuests.find(g => g.user_id === userId);
+    const existingEntry = joinedGuests.find((g) => g.user_id === userId);
     const previousGroupSize = existingEntry ? existingEntry.group_size : 0;
 
     // Calculate available seats considering previous groupSize
@@ -176,7 +186,10 @@ export async function addMyNameAction({
 
     // Check if the new group size is valid
     if (groupSize > seatsOpen) {
-      return { success: false, message: `Not enough seats available. Only ${seatsOpen} available.` };
+      return {
+        success: false,
+        message: `Not enough seats available. Only ${seatsOpen} available.`,
+      };
     }
 
     if (existingEntry) {
@@ -205,12 +218,16 @@ export async function addMyNameAction({
       }
     }
 
-    return { success: true, message: "Successfully joined or updated the post" };
+    return {
+      success: true,
+      message: "Successfully joined or updated the post",
+    };
   } catch (error) {
     console.error("Error:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "An unexpected error occurred",
+      message:
+        error instanceof Error ? error.message : "An unexpected error occurred",
     };
   }
 }

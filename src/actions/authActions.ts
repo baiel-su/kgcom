@@ -4,7 +4,7 @@ import db from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { createSupabaseServerClient } from "@/lib/auth/server";
 import { getErrorMessage } from "@/lib/utils";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
 export const signUpAction = async (formData: FormData) => {
   try {
@@ -12,24 +12,22 @@ export const signUpAction = async (formData: FormData) => {
     const data = {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
-      fullName: formData.get("fullName") as string || "", // Default empty string 
+      full_name: (formData.get("fullName") as string) || "", // Default empty string
       address: (formData.get("address") as string) || "", // Default empty string
-      phone: formData.get("phone") ? parseInt(formData.get("phone") as string, 10) : null, // Convert to integer or set null
+      phone: (formData.get("phone") as string) || "",
     };
     const { data: signUpData, error } = await auth.signUp(data);
-
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     await db.insert(users).values({
-      id: signUpData.user ? signUpData.user.id : "", 
+      id: signUpData.user ? signUpData.user.id : "",
       email: data.email,
       password: hashedPassword,
-      fullName: data.fullName,
+      full_name: data.full_name,
       address: data.address, // Can be empty ""
-      phone: data.phone ? data.phone.toString() : "0", // Convert to string or default to "0"
+      phone: data.phone ? data.phone.toString() : "",
     });
-
 
     if (error) throw error;
 
@@ -39,8 +37,6 @@ export const signUpAction = async (formData: FormData) => {
     if (loginError) throw loginError;
     if (!signInData.session) throw new Error("No session");
     return { errorMessage: null };
-
-
   } catch (error) {
     return { errorMessage: getErrorMessage(error) };
   }
@@ -48,7 +44,7 @@ export const signUpAction = async (formData: FormData) => {
 
 export const signInAction = async (formData: FormData) => {
   try {
-    const {auth} = await createSupabaseServerClient();
+    const { auth } = await createSupabaseServerClient();
 
     const data = {
       email: formData.get("email") as string,
@@ -58,23 +54,57 @@ export const signInAction = async (formData: FormData) => {
       await auth.signInWithPassword(data);
     if (loginError) throw loginError;
     if (!signInData.session) throw new Error("No session");
-    
-    return { errorMessage: null };
 
-      
+    return { errorMessage: null };
   } catch (error) {
     return { errorMessage: getErrorMessage(error) };
   }
 };
 
 export const signOutAction = async () => {
-  const {auth} = await createSupabaseServerClient();
+  const { auth } = await createSupabaseServerClient();
   try {
     const { error } = await auth.signOut();
     if (error) throw error;
 
     // Refresh the page after successful sign out
-   
+
+    return { errorMessage: null };
+  } catch (error) {
+    return { errorMessage: getErrorMessage(error) };
+  }
+};
+
+export const sendResetPasswordEmail = async (formData: FormData) => {
+  try {
+    const { auth } = await createSupabaseServerClient();
+
+    const email = formData.get("email") as string;
+
+    if (!email) throw new Error("Email is required");
+
+    const { error } = await auth.resetPasswordForEmail(email);
+
+    if (error) throw error;
+
+    return { errorMessage: null };
+  } catch (error) {
+    return { errorMessage: getErrorMessage(error) };
+  }
+};
+export const updatePassword = async (formData: FormData) => {
+
+  try {
+    const { auth } = await createSupabaseServerClient();
+
+    const newPassword = formData.get("newPassword")?.toString().trim();
+
+    if (!newPassword) throw new Error("New password is required");
+
+    const { error } = await auth.updateUser({ password: newPassword });
+
+    if (error) throw error;
+
     return { errorMessage: null };
   } catch (error) {
     return { errorMessage: getErrorMessage(error) };
