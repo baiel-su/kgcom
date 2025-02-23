@@ -1,13 +1,14 @@
 "use client";
 
-import UserProfileComponent from "@/components/userProfile/userProfile";
+import PrayerTimes from "@/data/prayTime";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   return (
     <div>
-      <UserProfileComponent />
+      <h1>
+        <PrayerTimes />
+      </h1>
     </div>
-
-    // <IftarFinderPage/>
   );
 }

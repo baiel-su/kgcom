@@ -1,7 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/contexts/authContext";
+import { LogOut, User } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { JSX, SVGProps } from "react";
 import SignOutButton from "../signOutButton/signOutButton";
 import {
@@ -13,8 +16,6 @@ import {
   NavigationMenuTrigger,
 } from "../ui/navigation-menu";
 import UserProfileComponent from "../userProfile/userProfile";
-import { useAuth } from "@/contexts/authContext";
-import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/", label: "Home" },
@@ -25,6 +26,7 @@ const links = [
 
 export default function Navbar() {
   const { user } = useAuth();
+  console.log(user);
   const pathname = usePathname();
   const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
 
@@ -52,9 +54,15 @@ export default function Navbar() {
                     {" "}
                     {user?.email}
                   </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="flex flex-col max-w-[400px] p-4 md:w-[500px] lg:w-[600px]">
-                      <NavigationMenuLink>Edit Profile</NavigationMenuLink>
+                  <NavigationMenuContent className="">
+                    <ul className="flex flex-col gap-3 max-w-[400px] p-4 md:max-w-[500px] lg:max-w-[600px] lg:min-w-[120px]">
+                      <Sheet>
+                        <SheetTrigger>Edit Profile </SheetTrigger>
+                        <SheetContent>
+                          <UserProfileComponent />
+                        </SheetContent>
+                      </Sheet>
+                      <NavigationMenuLink></NavigationMenuLink>
                       <NavigationMenuLink>
                         <SignOutButton />
                       </NavigationMenuLink>
@@ -123,16 +131,23 @@ export default function Navbar() {
                     {user?.email}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="">
-                    <ul className="flex flex-col gap-3 max-w-[400px] p-4 md:max-w-[500px] lg:max-w-[600px] lg:min-w-[120px]">
+                    <ul className="flex flex-col gap-3 max-w-[400px] p-4 md:max-w-[500px] lg:max-w-[600px] lg:min-w-[150px]">
                       <Sheet>
-                        <SheetTrigger>Edit Profile </SheetTrigger>
+                        <SheetTrigger className="text-sm">
+                          <div className="flex items-center gap-4">
+                            <User />
+                            Edit Profile{" "}
+                          </div>
+                        </SheetTrigger>
                         <SheetContent>
                           <UserProfileComponent />
                         </SheetContent>
                       </Sheet>
-                      <NavigationMenuLink></NavigationMenuLink>
+                      <hr />
                       <NavigationMenuLink>
-                        <SignOutButton />
+                        <div className="flex items-center text-sm gap-4">
+                          <LogOut /> <SignOutButton />
+                        </div>
                       </NavigationMenuLink>
                     </ul>
                   </NavigationMenuContent>

@@ -22,6 +22,34 @@
       "when": 1739854021842,
       "tag": "0002_worried_earthquake",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1739857505144,
+      "tag": "0003_motionless_king_cobra",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1740106421661,
+      "tag": "0004_complete_sway",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1740106836470,
+      "tag": "0005_huge_blackheart",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1740107045630,
+      "tag": "0006_nappy_the_hunter",
+      "breakpoints": true
     }
   ]
 }

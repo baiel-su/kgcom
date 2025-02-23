@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"; // Adjust the import path accordi
 import { fetchUserData } from "@/data/userData";
 import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { startTransition, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -33,9 +34,12 @@ const UserProfileComponent: React.FC = () => {
   );
   const { setValue } = form;
 
+  console.log(userData);
+
   useEffect(() => {
     const getUserData = async () => {
       const data = await fetchUserData();
+      console.log(data);
       setUserData(data);
       if (data) {
         setValue("full_name", data.full_name);
@@ -46,8 +50,6 @@ const UserProfileComponent: React.FC = () => {
 
     getUserData();
   }, [setValue]);
-
-  console.log(userData?.phone);
 
   const router = useRouter();
   const onSubmit = (values: z.infer<typeof userSchema>) => {
@@ -125,17 +127,27 @@ const UserProfileComponent: React.FC = () => {
               <FormItem>
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
-                  <Input
-                    // defaultValue={userData?.phone}
-                    placeholder="1234567890"
-                    {...field}
-                  />
+                  <div className="flex justify-center items-center">
+                    <span className="text-sm rounded-md border border-input  px-3 py-[7px]  shadow-sm rounded-r-none border-r-0">
+                      +1
+                    </span>
+                    <Input
+                      // defaultValue={userData?.phone}
+                      placeholder="856984522"
+                      maxLength={10}
+                      {...field}
+                      className="rounded-l-none py-2"
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <div className="flex flex-col gap-4">
+            <Link href={"/auth/reset-password"} className="text-blue-500 hover:underline">Reset Password</Link>
+            <Button type="submit">Submit</Button>
+          </div>
         </form>
       </Form>
     </div>

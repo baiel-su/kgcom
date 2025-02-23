@@ -3,15 +3,9 @@
 import { createSupabaseServerClient } from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 
-interface ProfileData {
-  full_name: string;
-  address: string;
-  phone: string;
-}
-
 export async function updateProfile(formData: FormData) {
   const supabase = await createSupabaseServerClient();
-  const data: ProfileData = {
+  const data = {
     full_name: formData.get("full_name") as string,
     address: formData.get("address") as string,
     phone: formData.get("phone") as string,
@@ -59,11 +53,11 @@ export async function updateProfile(formData: FormData) {
     revalidatePath("/profile");
 
     return { errorMessage: null };
-
   } catch (error) {
     console.error("Profile update error:", error);
     return {
-      errorMessage: error instanceof Error ? error.message : "An unexpected error occurred",
+      errorMessage:
+        error instanceof Error ? error.message : "An unexpected error occurred",
     };
   }
 }

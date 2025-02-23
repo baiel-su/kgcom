@@ -2,7 +2,7 @@
 
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -20,42 +20,39 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-import { ResponsiveForm } from "../post/form";
-import { IftarOffer, iftarOffers } from "./mockdata";
-
+import useFetchPosts, { Post } from "@/hooks/use-fetch-posts";
+import dayjs from "dayjs";
+import Link from "next/link";
 
 export default function IftarFinderPage() {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const { posts, error, loading } = useFetchPosts();
+  const [filteredPosts, setFilteredPosts] = useState<Post[] | null>(null);
 
-  const filteredOffers = iftarOffers.filter(
-    (offer) => offer.date === format(date || new Date(), "yyyy-MM-dd")
-  );
+  useEffect(() => {
+    if (posts && date) {
+      const formattedDate = dayjs(date).format("YYYY-MM-DD"); // Format the selected date
 
-  
+      const filtered = posts.filter((post) => {
+        const postDate = dayjs(post.createdAt).format("YYYY-MM-DD"); // Assuming createdAt is in YYYY-MM-DD format
+        return postDate === formattedDate;
+      });
+      setFilteredPosts(filtered);
+    } else {
+      setFilteredPosts(posts); //show all posts if no date is selected.
+    }
+  }, [posts, date]);
 
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
   return (
-    <div className=" container mx-auto py-10">
-      {/*  
-      <div className="py-10 flex justify-between mb-8">
-        <div className="flex flex-col gap-10 justify-center items-start w-1/2 ">
-          <h1 className="text-4xl font-bold text-center">Iftar Finder</h1>
-          <p className="text-lg text-muted-foreground">
-            Wishing you a blessed and peaceful Ramadan!
-            <br /> May this holy month bring you and your loved ones joy,
-            prosperity, and spiritual growth.{" "}
-          </p>
-          <Button
-            className={cn("mt-4", date ? "bg-primary" : "bg-muted-foreground")}
-          >
-            Invite guests
-          </Button>
-        </div>
-        <div className="">
-          <img src="/pngegg.png" alt="Food" className="w-52  " />
-        </div>
-      </div>*/}
-      <h1 className="text-4xl font-bold ">Iftar Schedule</h1>
+    <div className="container mx-auto py-10">
+      <h1 className="text-4xl font-bold">Iftar Schedule</h1>
       <div className="py-10">
         <div className="flex gap-5 mb-8">
           <Popover>
@@ -80,12 +77,14 @@ export default function IftarFinderPage() {
               />
             </PopoverContent>
           </Popover>
-          <ResponsiveForm />
+          <Link href="/ramadan/post/create-post">
+            <Button>Host an Iftar</Button>
+          </Link>
         </div>
 
-        {filteredOffers.length > 0 ? (
+        {filteredPosts && filteredPosts?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredOffers.map((offer) => (
+            {filteredPosts?.map((offer) => (
               <IftarCard key={offer.id} offer={offer} />
             ))}
           </div>
@@ -99,20 +98,29 @@ export default function IftarFinderPage() {
   );
 }
 
-function IftarCard({ offer }: { offer: IftarOffer }) {
+function IftarCard({ offer }: { offer: any }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{offer.hostName}</CardTitle>
-        <CardDescription>{offer.address}</CardDescription>
+        <CardTitle className="font-semibold">
+          <p>
+            Host: <span>{offer.user.full_name}</span>
+          </p>
+        </CardTitle>
+        <CardDescription>Address: {offer.address}</CardDescription>
       </CardHeader>
       <CardContent>
-        <h3 className="font-semibold mb-2">Menu:</h3>
-        <ul className="list-disc list-inside">
-          {offer.menu.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
+        <h3 className="mb-2">
+          Phone: <span>+1{offer.user.phone}</span>
+        </h3>
+        <h3 className="mb-2">
+          Gender: <span>{offer.gender}</span>
+        </h3>
+        <Link href={`/ramadan/post/${offer.id}`} as={`/ramadan/post/${offer.id}`}>
+          <Button className="place-items-end">Add my name</Button>
+        </Link>
+
+       
       </CardContent>
     </Card>
   );
