@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
 import { fetchPostsAction } from '@/actions/postActions'; // Import your fetchPostsAction
-import { convertToCentralTime } from '@/lib/convertTime';
+import { useEffect, useState } from 'react';
 
 export interface Post {
   id: string;

@@ -7,18 +7,18 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { sendResetPasswordEmail } from "@/actions/authActions";
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 import { useTransition } from "react";
-import { sendResetPasswordEmail } from "@/actions/authActions";
 
 const ResetEmailSchema = z.object({
   email: z.string().email(),

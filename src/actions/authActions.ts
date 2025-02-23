@@ -92,16 +92,16 @@ export const sendResetPasswordEmail = async (formData: FormData) => {
     return { errorMessage: getErrorMessage(error) };
   }
 };
-export const updatePassword = async (formData: FormData) => {
+export const updatePassword = async (formData: FormData)  => {
 
   try {
     const { auth } = await createSupabaseServerClient();
 
-    const newPassword = formData.get("newPassword")?.toString().trim();
+    const password = formData.get("password") as string;
 
-    if (!newPassword) throw new Error("New password is required");
+    if (!password) throw new Error("New password is required");
 
-    const { error } = await auth.updateUser({ password: newPassword });
+    const { error } = await auth.updateUser({ password });
 
     if (error) throw error;
 

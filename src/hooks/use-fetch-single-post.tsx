@@ -3,7 +3,7 @@
 "use client";
 
 import { fetchSinglePostAction } from "@/actions/postActions";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export interface Post {
   id: string;

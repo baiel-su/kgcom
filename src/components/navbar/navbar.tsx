@@ -1,7 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/contexts/authContext";
+import { LogOut, User } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { JSX, SVGProps } from "react";
 import SignOutButton from "../signOutButton/signOutButton";
 import {
@@ -13,9 +16,6 @@ import {
   NavigationMenuTrigger,
 } from "../ui/navigation-menu";
 import UserProfileComponent from "../userProfile/userProfile";
-import { useAuth } from "@/contexts/authContext";
-import { usePathname } from "next/navigation";
-import { LogOut, User } from "lucide-react";
 
 const links = [
   { href: "/", label: "Home" },

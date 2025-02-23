@@ -1,9 +1,6 @@
 "use server";
 
-import db from "@/database/drizzle";
-import { posts, postGuests } from "@/database/schema";
 import { createSupabaseServerClient } from "@/lib/auth/server";
-import { eq } from "drizzle-orm";
 
 const createPostAction = async (formData: FormData) => {
   const supabase = await createSupabaseServerClient();
