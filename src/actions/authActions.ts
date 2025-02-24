@@ -12,7 +12,7 @@ export const signUpAction = async (formData: FormData) => {
     const data = {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
-      full_name: (formData.get("fullName") as string) || "", // Default empty string
+      full_name: (formData.get("full_name") as string) || "", // Default empty string
       address: (formData.get("address") as string) || "", // Default empty string
       phone: (formData.get("phone") as string) || "",
     };
