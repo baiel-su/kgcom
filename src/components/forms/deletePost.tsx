@@ -21,7 +21,7 @@ export const DeletePost = ({ postId, userId }: JoinPostFormProps) => {
         router.push("/ramadan/iftar");
         toast({
           title: "Success",
-          description: "Successfully joined the post",
+          description: "Successfully deleted the post",
           variant: "default",
         });
       } else {

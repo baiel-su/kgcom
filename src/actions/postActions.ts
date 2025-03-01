@@ -2,20 +2,21 @@
 
 import { createSupabaseServerClient } from "@/lib/auth/server";
 
-const createPostAction = async (formData: FormData) => {
+//
+const createPostAction = async (formData: FormData, postId: string) => {
   const supabase = await createSupabaseServerClient();
 
   const postData = {
     userId: formData.get("userId") as string,
     gender: formData.get("gender") as string,
     address: formData.get("address") as string,
-    iftarType: formData.get("iftarType") as string,
+    iftar_type: formData.get("iftar_type") as string,
     max_guests: Number(formData.get("max_guests")),
     hostDate: new Date(formData.get("hostDate") as string),
   };
 
   if (isNaN(postData.max_guests)) {
-    return { error: "Invalid number input" }; // Handle errors appropriately
+    return { error: "Invalid number input" };
   }
 
   // Check if the user is authenticated
@@ -29,21 +30,25 @@ const createPostAction = async (formData: FormData) => {
   }
 
   try {
-    // Insert the post into the "posts" table (id is auto-generated)
-    const { error: insertError } = await supabase.from("posts").upsert({
-      user_id: user.id,
-      gender: postData.gender,
-      address: postData.address,
-      max_guests: postData.max_guests,
-      host_date: postData.hostDate,
-      iftar_type: postData.iftarType,
-    });
+    // Insert a new post or update an existing one
+    const { error: upsertError } = await supabase.from("posts").upsert(
+      {
+        id: postId ?? undefined, // Use postId for update, else create new post
+        user_id: user.id,
+        gender: postData.gender,
+        address: postData.address,
+        max_guests: postData.max_guests,
+        host_date: postData.hostDate,
+        iftar_type: postData.iftar_type,
+      },
+      { onConflict: "id" } // Ensures updates occur when `id` exists
+    );
 
-    if (insertError) throw new Error(insertError.message);
+    if (upsertError) throw new Error(upsertError.message);
 
     return { errorMessage: null };
   } catch (error) {
-    console.error("Post creation error:", error);
+    console.error("Post creation/update error:", error);
     return {
       errorMessage:
         error instanceof Error ? error.message : "An unexpected error occurred",
@@ -251,7 +256,10 @@ export const deletePostAction = async (postId: string, userId: string) => {
 
     // Check if the user is authorized to delete the post
     if (user.id !== userId) {
-      return { success: false, message: "User not authorized to delete the post" };
+      return {
+        success: false,
+        message: "User not authorized to delete the post",
+      };
     }
 
     // Delete the post from the "posts" table

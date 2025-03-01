@@ -33,8 +33,7 @@ const UserProfileComponent: React.FC = () => {
     null
   );
   const { setValue } = form;
-
-  console.log(userData);
+  
 
   useEffect(() => {
     const getUserData = async () => {

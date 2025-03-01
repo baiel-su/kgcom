@@ -23,7 +23,7 @@ export const posts = pgTable("posts", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
   user_id: uuid("user_id")
     .notNull()
-    .references(() => users.id), // Post creator
+    .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }), // Post creator
   gender: varchar("gender", { length: 255 }).notNull(),
   address: text("address").notNull(),
   max_guests: integer("max_guests").notNull(),
@@ -37,10 +37,10 @@ export const postGuests = pgTable(
   {
     postId: uuid("post_id")
       .notNull()
-      .references(() => posts.id),
+      .references(() => posts.id, { onDelete: "cascade", onUpdate: "cascade" }),
     userId: uuid("user_id")
       .notNull()
-      .references(() => users.id), // Users who join the post (excluding creator)
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }), // Users who join the post (excluding creator)
     groupSize: integer("group_size").notNull(),
     joinedAt: timestamp("joined_at", { withTimezone: true }).defaultNow(),
   },

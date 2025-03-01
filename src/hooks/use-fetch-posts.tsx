@@ -1,11 +1,12 @@
 import { fetchPostsAction } from '@/actions/postActions'; // Import your fetchPostsAction
 import { useEffect, useState } from 'react';
 
-export interface Post {
+export interface IPost {
   id: string;
   gender: string;
   address: string;
   max_guests: number;
+  iftar_type: string;
   post_guests: {
     group_size: number;
     user: {
@@ -23,14 +24,14 @@ export interface Post {
 }
 
 interface UseFetchPostsResult {
-  posts: Post[] | null; // Allow for null posts initially
+  posts: IPost[] | null; // Allow for null posts initially
   error: string | null;
   loading: boolean;
   refetch: () => void; // Add refetch functionality
 }
 
 const useFetchPosts = (): UseFetchPostsResult => {
-  const [posts, setPosts] = useState<Post[] | null>(null); // Initialize as null
+  const [posts, setPosts] = useState<IPost[] | null>(null); // Initialize as null
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 

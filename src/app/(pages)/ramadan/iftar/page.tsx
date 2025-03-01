@@ -113,6 +113,7 @@ function IftarCard({ offer }: { offer: Post }) {
         <CardDescription>Address: {offer.address}</CardDescription>
       </CardHeader>
       <CardContent>
+        <div></div>
         <h3 className="mb-2">
           Guests invited: <span>{offer.max_guests}</span>
         </h3>
