@@ -40,7 +40,6 @@ const formSchema = z.object({
       message: "Password must contain at least one number",
     }),
   full_name: z.string().min(2).max(50),
-  address: z.string().min(2).max(50),
   phone: z.string().min(2).max(50),
 });
 
@@ -51,7 +50,6 @@ export default function SignUpPage() {
       email: "",
       password: "",
       full_name: "",
-      address: "",
       phone: "",
     },
   });
@@ -77,7 +75,6 @@ export default function SignUpPage() {
     formData.append("email", form.getValues().email);
     formData.append("password", form.getValues().password);
     formData.append("full_name", form.getValues().full_name);
-    formData.append("address", form.getValues().address);
     formData.append("phone", form.getValues().phone);
     startTransition(async () => {
       const { errorMessage } = await signUpAction(formData);
