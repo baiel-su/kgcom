@@ -3,7 +3,7 @@
 import { createSupabaseServerClient } from "@/lib/auth/server";
 
 //
-const createPostAction = async (formData: FormData, postId: string) => {
+const createPostAction = async (formData: FormData, postId?: string) => {
   const supabase = await createSupabaseServerClient();
 
   const postData = {

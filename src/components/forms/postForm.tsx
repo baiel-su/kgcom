@@ -76,7 +76,7 @@ const PostForm = ({ post }: PostFormProps) => {
     };
 
     getUserData();
-  }, [setValue]);
+  }, [post, setValue]);
 
   const onSubmit = () => {
     const formData = new FormData();
@@ -265,7 +265,7 @@ const PostForm = ({ post }: PostFormProps) => {
             )}
           />
         </div>
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="w-full">Submit</Button>
       </form>
     </Form>
   );

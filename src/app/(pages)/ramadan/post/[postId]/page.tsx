@@ -40,16 +40,16 @@ export default function PostClient() {
           {isClicked ? <PostForm post={post} /> : <PostComponent post={post} />}
 
           <div className="flex flex-col gap-4">
-            <AddMyNameForm postId={postId} />
+            {!isClicked && <AddMyNameForm postId={postId} />}
             {user && (
               <div className="flex justify-between w-full gap-4">
                 <Button
                   className="w-full"
                   onClick={() => setIsClicked(!isClicked)}
                 >
-                  {isClicked?'Cancel':'Edit'}
+                  {isClicked ? "Cancel" : "Edit"}
                 </Button>
-                <DeletePost postId={postId} userId={user.id} />
+                {!isClicked && <DeletePost postId={postId} userId={user.id} />}
               </div>
             )}
           </div>

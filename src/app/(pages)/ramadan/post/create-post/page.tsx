@@ -26,11 +26,12 @@ import { useRouter } from "next/navigation";
 import { startTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useFetchPost } from "@/hooks/use-fetch-single-post";
 // import { format } from "path";
 
 const formSchema = z.object({
   address: z.string().nonempty("Address is required"),
-  iftarType: z.enum(["dine_in", "take_out"]).refine((val) => val !== undefined, {
+  iftar_type: z.enum(["dine_in", "take_out"]).refine((val) => val !== undefined, {
     message: "Iftar type is required",
   }),
   max_guests: z.coerce.number().min(1, "Guests quantity must be at least 1"),
@@ -47,7 +48,7 @@ const CreatePost = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       address: "",
-      iftarType: "dine_in",
+      iftar_type: "dine_in",
       max_guests: 0,
       gender: "men",
       hostDate: new Date(),
@@ -56,11 +57,12 @@ const CreatePost = () => {
 
   const router = useRouter();
 
+
   const onSubmit = () => {
     const formData = new FormData();
     formData.append("gender", form.getValues().gender);
     formData.append("address", form.getValues().address);
-    formData.append("iftarType", form.getValues().iftarType);
+    formData.append("iftar_type", form.getValues().iftar_type);
     formData.append("max_guests", form.getValues().max_guests.toString());
     formData.append("hostDate", form.getValues().hostDate.toString());
     // console.log(form.getValues());
@@ -115,7 +117,7 @@ const CreatePost = () => {
             />
             <FormField
               control={form.control}
-              name="iftarType"
+              name="iftar_type"
               render={({ field }) => (
                 <FormItem className="space-y-3">
                   <FormLabel>Iftar mode </FormLabel>

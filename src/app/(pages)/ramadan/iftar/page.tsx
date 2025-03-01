@@ -20,14 +20,14 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-import useFetchPosts, { Post } from "@/hooks/use-fetch-posts";
+import useFetchPosts, { IPost } from "@/hooks/use-fetch-posts";
 import dayjs from "dayjs";
 import Link from "next/link";
 
 export default function IftarFinderPage() {
   const [date, setDate] = useState<Date | undefined>(undefined);
   const { posts, error } = useFetchPosts();
-  const [filteredPosts, setFilteredPosts] = useState<Post[] | null>(null);
+  const [filteredPosts, setFilteredPosts] = useState<IPost[] | null>(null);
 
   useEffect(() => {
     if (posts && date) {
@@ -93,7 +93,7 @@ export default function IftarFinderPage() {
   );
 }
 
-function IftarCard({ offer }: { offer: Post }) {
+function IftarCard({ offer }: { offer: IPost }) {
   const seatsLeft =
     offer.max_guests - offer.post_guests.reduce((a, c) => a + c.group_size, 0);
 

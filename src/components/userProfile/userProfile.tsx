@@ -34,7 +34,9 @@ const UserProfileComponent: React.FC = () => {
   );
   const { setValue } = form;
   
-
+  if (userData) {
+    console.log('d')
+  }
   useEffect(() => {
     const getUserData = async () => {
       const data = await fetchUserData();
