@@ -1,6 +1,6 @@
 {
-  "id": "167ad20e-4104-47d4-956d-f1492e9c8ab5",
-  "prevId": "c5922ed0-196e-40dd-b334-1ac4d230747b",
+  "id": "251ea7f3-4f1e-4347-b938-c122d48a0683",
+  "prevId": "046daba9-a326-4d5c-98a4-d3f9d6ece01e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -46,8 +46,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         },
         "post_guests_user_id_users_id_fk": {
           "name": "post_guests_user_id_users_id_fk",
@@ -59,11 +59,19 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "post_guests_post_id_user_id_pk": {
+          "name": "post_guests_post_id_user_id_pk",
+          "columns": [
+            "post_id",
+            "user_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -111,9 +119,16 @@
           "notNull": false,
           "default": "now()"
         },
-        "date_available": {
-          "name": "date_available",
+        "host_date": {
+          "name": "host_date",
           "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "iftar_type": {
+          "name": "iftar_type",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         }
@@ -130,8 +145,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -167,12 +182,6 @@
         },
         "email": {
           "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "address": {
-          "name": "address",
           "type": "text",
           "primaryKey": false,
           "notNull": true

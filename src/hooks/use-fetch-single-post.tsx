@@ -4,30 +4,11 @@
 
 import { fetchSinglePostAction } from "@/actions/postActions";
 import { useEffect, useState } from "react";
+import { IPost } from "./use-fetch-posts";
 
-export interface Post {
-  id: string;
-  gender: string;
-  address: string;
-  max_guests: number;
-  post_guests: {
-    group_size: number;
-    user: {
-      id: string;
-      full_name: string;
-      phone: string;
-    };
-  }[];
-  user: {
-    full_name: string;
-    phone: string;
-  };
-  createdAt: string;
-  host_date: string;
-}
 
 export const useFetchPost = (postId: string | undefined) => {
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<IPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

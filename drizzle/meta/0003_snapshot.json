@@ -1,9 +1,82 @@
 {
-  "id": "c5922ed0-196e-40dd-b334-1ac4d230747b",
-  "prevId": "ee43e9e2-5408-4fa5-b269-f9304a2184d4",
+  "id": "046daba9-a326-4d5c-98a4-d3f9d6ece01e",
+  "prevId": "d136628b-c12b-415a-a4cf-de8f9c0daf6a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.post_guests": {
+      "name": "post_guests",
+      "schema": "",
+      "columns": {
+        "post_id": {
+          "name": "post_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group_size": {
+          "name": "group_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "post_guests_post_id_posts_id_fk": {
+          "name": "post_guests_post_id_posts_id_fk",
+          "tableFrom": "post_guests",
+          "tableTo": "posts",
+          "columnsFrom": [
+            "post_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "post_guests_user_id_users_id_fk": {
+          "name": "post_guests_user_id_users_id_fk",
+          "tableFrom": "post_guests",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "post_guests_post_id_user_id_pk": {
+          "name": "post_guests_post_id_user_id_pk",
+          "columns": [
+            "post_id",
+            "user_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.posts": {
       "name": "posts",
       "schema": "",
@@ -39,19 +112,25 @@
           "primaryKey": false,
           "notNull": true
         },
-        "users": {
-          "name": "users",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'[]'::jsonb"
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
+        },
+        "host_date": {
+          "name": "host_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "iftar_type": {
+          "name": "iftar_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
@@ -66,7 +145,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -103,12 +182,6 @@
         },
         "email": {
           "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "address": {
-          "name": "address",
           "type": "text",
           "primaryKey": false,
           "notNull": true

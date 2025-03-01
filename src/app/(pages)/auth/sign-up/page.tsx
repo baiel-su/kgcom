@@ -121,11 +121,11 @@ export default function SignUpPage() {
         <div className="mx-auto w-full max-w-sm space-y-6 px-4 sm:px-0">
           <div className="space-y-2 text-center flex flex-col items-center">
             <Image
-              src="/logo.svg"
+              src="/bread.png"
               alt="Logo"
               width={65} // Adjust the width as needed
               height={65} // Adjust the height as needed
-              className="mb-2 text-center" // Adds margin below the logo
+              className="text-center" // Adds margin below the logo
             />
             <h1 className="text-3xl font-bold">Welcome </h1>
             <p className="text-gray-500 dark:text-gray-400">
@@ -142,23 +142,7 @@ export default function SignUpPage() {
                     <FormItem>
                       <FormLabel>Full name</FormLabel>
                       <FormControl>
-                        <Input placeholder="m@example.com" {...field} />
-                      </FormControl>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your address" {...field} />
+                        <Input placeholder="John Doe" {...field} />
                       </FormControl>
 
                       <FormMessage />

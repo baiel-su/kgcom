@@ -29,12 +29,15 @@ import { z } from "zod";
 
 const formSchema = z.object({
   address: z.string().nonempty("Address is required"),
+  iftar_type: z.enum(["dine_in", "take_out"]).refine((val) => val !== undefined, {
+    message: "Iftar type is required",
+  }),
   max_guests: z.coerce.number().min(1, "Guests quantity must be at least 1"),
   gender: z.enum(["men", "women", "mixed"]).refine((val) => val !== undefined, {
     message: "Gender is required",
   }),
   hostDate: z.date().refine((val) => val !== undefined, {
-    message: "Host date is required",
+    message: "Host date is required.",
   }),
 });
 
@@ -43,18 +46,21 @@ const CreatePost = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       address: "",
+      iftar_type: "dine_in",
       max_guests: 0,
-      gender: "mixed",
+      gender: "men",
       hostDate: new Date(),
     },
   });
 
   const router = useRouter();
 
+
   const onSubmit = () => {
     const formData = new FormData();
     formData.append("gender", form.getValues().gender);
     formData.append("address", form.getValues().address);
+    formData.append("iftar_type", form.getValues().iftar_type);
     formData.append("max_guests", form.getValues().max_guests.toString());
     formData.append("hostDate", form.getValues().hostDate.toString());
     // console.log(form.getValues());
@@ -109,6 +115,36 @@ const CreatePost = () => {
             />
             <FormField
               control={form.control}
+              name="iftar_type"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Iftar mode </FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="dine_in" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Dine in</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="take_out" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Take out</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="max_guests"
               render={({ field }) => (
                 <FormItem>
@@ -152,7 +188,7 @@ const CreatePost = () => {
                           )}
                         </Button>
                       </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
                           selected={field.value}
@@ -160,7 +196,7 @@ const CreatePost = () => {
                           initialFocus
                           disabled={(date) => date < new Date()}
                         />
-                        </PopoverContent>
+                      </PopoverContent>
                     </Popover>
                   </FormControl>
                   <FormMessage>
@@ -174,7 +210,7 @@ const CreatePost = () => {
               name="gender"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Notify me about...</FormLabel>
+                  <FormLabel>Gender</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}

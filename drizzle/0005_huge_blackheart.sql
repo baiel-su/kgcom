@@ -1,1 +1,0 @@
-ALTER TABLE "posts" ALTER COLUMN "date_available" SET DEFAULT now();

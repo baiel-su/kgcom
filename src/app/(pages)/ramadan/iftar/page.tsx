@@ -20,14 +20,14 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-import useFetchPosts, { Post } from "@/hooks/use-fetch-posts";
+import useFetchPosts, { IPost } from "@/hooks/use-fetch-posts";
 import dayjs from "dayjs";
 import Link from "next/link";
 
 export default function IftarFinderPage() {
   const [date, setDate] = useState<Date | undefined>(undefined);
   const { posts, error } = useFetchPosts();
-  const [filteredPosts, setFilteredPosts] = useState<Post[] | null>(null);
+  const [filteredPosts, setFilteredPosts] = useState<IPost[] | null>(null);
 
   useEffect(() => {
     if (posts && date) {
@@ -69,12 +69,7 @@ export default function IftarFinderPage() {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                
-              />
+              <Calendar mode="single" selected={date} onSelect={setDate} />
             </PopoverContent>
           </Popover>
           <Link href="/ramadan/post/create-post">
@@ -98,35 +93,48 @@ export default function IftarFinderPage() {
   );
 }
 
-function IftarCard({ offer }: { offer: Post }) {
+function IftarCard({ offer }: { offer: IPost }) {
+  const seatsLeft =
+    offer.max_guests - offer.post_guests.reduce((a, c) => a + c.group_size, 0);
+
+    const isFull = seatsLeft === 0;
   return (
-    <Card>
+    <Card
+      className={
+        isFull ? "bg-gray-200 pointer-events-none opacity-75" : ""
+      }
+    >
       <CardHeader>
         <CardTitle className="font-semibold">
           <p>
-            Host: <span>{offer.user.full_name}</span>
+            Host: <span>{offer.user?.full_name}</span>
           </p>
         </CardTitle>
         <CardDescription>Address: {offer.address}</CardDescription>
       </CardHeader>
       <CardContent>
-        {/* <h3 className="mb-2">
-          Phone: <span>+1{offer.user.phone}</span>
-        </h3> */}
+        <div></div>
         <h3 className="mb-2">
-          Hosting date: <span>{dayjs(offer.host_date).format("MM-DD-YYYY")}</span>
+          Guests invited: <span>{offer.max_guests}</span>
         </h3>
-        <h3 className="mb-2">
-          Gender: <span>{offer.gender}</span>
-        </h3>
-        <Link href={`/ramadan/post/${offer.id}`} as={`/ramadan/post/${offer.id}`}>
-          <Button className="place-items-end">Add my name</Button>
-        </Link>
-
-       
+        <div className="flex justify-between items-center">
+          <Link
+            href={`/ramadan/post/${offer.id}`}
+            as={`/ramadan/post/${offer.id}`}
+          >
+            <Button className="place-items-end" disabled={isFull}>
+              Add my name
+            </Button>
+          </Link>
+          {isFull ?   (
+            <h3 className="">Full</h3>
+          ):(
+            <h3 className="">
+              Open Seats: <span>{seatsLeft}</span>
+            </h3>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
 }
-
-
