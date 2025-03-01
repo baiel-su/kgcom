@@ -1,6 +1,7 @@
 "use client";
 import createPostAction from "@/actions/postActions";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -21,12 +22,10 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { useRouter } from "next/navigation";
 import { startTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useFetchPost } from "@/hooks/use-fetch-single-post";
 // import { format } from "path";
 
 const formSchema = z.object({
@@ -39,7 +38,7 @@ const formSchema = z.object({
     message: "Gender is required",
   }),
   hostDate: z.date().refine((val) => val !== undefined, {
-    message: "Host date is required",
+    message: "Host date is required.",
   }),
 });
 
