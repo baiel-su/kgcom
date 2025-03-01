@@ -55,7 +55,6 @@ const UserProfileComponent: React.FC = () => {
   const onSubmit = (values: z.infer<typeof userSchema>) => {
     const form = new FormData();
     form.append("full_name", values.full_name); // Change to full_name
-    form.append("address", values.address);
     form.append("phone", values.phone); // Change to phone
 
     startTransition(async () => {
@@ -95,24 +94,6 @@ const UserProfileComponent: React.FC = () => {
                   <Input
                     // defaultValue={userData?.full_name}
                     placeholder="John"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Address</FormLabel>
-                <FormControl>
-                  <Input
-                    // defaultValue={userData?.address}
-                    placeholder="123 Main St"
                     {...field}
                   />
                 </FormControl>

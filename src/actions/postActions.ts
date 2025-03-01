@@ -9,6 +9,7 @@ const createPostAction = async (formData: FormData) => {
     userId: formData.get("userId") as string,
     gender: formData.get("gender") as string,
     address: formData.get("address") as string,
+    iftarType: formData.get("iftarType") as string,
     max_guests: Number(formData.get("max_guests")),
     hostDate: new Date(formData.get("hostDate") as string),
   };
@@ -35,6 +36,7 @@ const createPostAction = async (formData: FormData) => {
       address: postData.address,
       max_guests: postData.max_guests,
       host_date: postData.hostDate,
+      iftar_type: postData.iftarType,
     });
 
     if (insertError) throw new Error(insertError.message);
@@ -57,11 +59,20 @@ export const fetchPostsAction = async () => {
   try {
     const { data: posts, error: fetchError } = await supabase.from("posts")
       .select(`
-     *,user:users (
-        full_name,
-        phone
-      )
-    `);
+        *,
+        user:users!posts_user_id_users_id_fk (
+          full_name,
+          phone
+        ),
+        post_guests (
+          group_size,
+          user:users (
+            id,
+            full_name,
+            phone
+          )
+        )
+      `);
 
     console.log(posts);
 
@@ -87,7 +98,7 @@ export const fetchSinglePostAction = async (postId: string) => {
       .select(
         `
         *,
-        user:users (
+        user:users!posts_user_id_users_id_fk (
           full_name,
           phone
         ),
@@ -223,3 +234,41 @@ export async function addMyNameAction({
     };
   }
 }
+
+export const deletePostAction = async (postId: string, userId: string) => {
+  const supabase = await createSupabaseServerClient();
+
+  try {
+    // Check if the user is authenticated
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return { success: false, message: "User not authenticated" };
+    }
+
+    // Check if the user is authorized to delete the post
+    if (user.id !== userId) {
+      return { success: false, message: "User not authorized to delete the post" };
+    }
+
+    // Delete the post from the "posts" table
+    const { error: deleteError } = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", postId);
+
+    if (deleteError) throw new Error(deleteError.message);
+
+    return { success: true, message: "Post deleted successfully" };
+  } catch (error) {
+    console.error("Delete post error:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+};

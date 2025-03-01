@@ -13,7 +13,6 @@ export const signUpAction = async (formData: FormData) => {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       full_name: (formData.get("full_name") as string) || "", // Default empty string
-      address: (formData.get("address") as string) || "", // Default empty string
       phone: (formData.get("phone") as string) || "",
     };
     const { data: signUpData, error } = await auth.signUp(data);
@@ -25,7 +24,6 @@ export const signUpAction = async (formData: FormData) => {
       email: data.email,
       password: hashedPassword,
       full_name: data.full_name,
-      address: data.address, // Can be empty ""
       phone: data.phone ? data.phone.toString() : "",
     });
 
