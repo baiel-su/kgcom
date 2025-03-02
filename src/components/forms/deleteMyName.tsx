@@ -1,8 +1,7 @@
 import { deleteMyNameAction } from "@/actions/postActions";
 import { toast } from "@/hooks/use-toast";
-import { Button } from "../ui/button";
 import { useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import { Button } from "../ui/button";
 
 interface IDeleteMyNameProps {
   postId: string;

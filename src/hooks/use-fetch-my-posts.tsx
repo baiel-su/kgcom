@@ -1,4 +1,4 @@
-import { fetchMyPostsAction, fetchPostsAction } from "@/actions/postActions"; // Import your fetchPostsAction
+import { fetchMyPostsAction } from "@/actions/postActions"; // Import your fetchPostsAction
 import { useEffect, useState } from "react";
 
 export interface IPost {
