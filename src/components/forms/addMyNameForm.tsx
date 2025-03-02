@@ -1,4 +1,10 @@
-import React, { startTransition } from "react";
+import { addMyNameAction } from "@/actions/postActions";
+import { toast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
@@ -8,27 +14,22 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { z } from "zod";
-import { addMyNameAction } from "@/actions/postActions";
-import { toast } from "@/hooks/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 
 const formSchema = z.object({
   groupSize: z.coerce.number().min(1, "Guests quantity must be at least 1"),
 });
 type JoinPostFormProps = {
-    postId: string;
-  };
-  
-export const AddMyNameForm = ({postId}:JoinPostFormProps) => {
+  postId: string;
+};
+
+export const AddMyNameForm = ({ postId }: JoinPostFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       groupSize: 0,
     },
   });
+  const [isPending, startTransition] = useTransition();
   const onSubmit = () => {
     startTransition(async () => {
       const { success, message } = await addMyNameAction({
@@ -58,7 +59,7 @@ export const AddMyNameForm = ({postId}:JoinPostFormProps) => {
   return (
     <div>
       <Form {...form}>
-        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="space-y-4 p-2 my-4" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             name="groupSize"
@@ -67,6 +68,7 @@ export const AddMyNameForm = ({postId}:JoinPostFormProps) => {
                 <FormLabel>Guests quantity</FormLabel>
                 <FormControl>
                   <Input
+                  className="bg-white"
                     type="number"
                     placeholder="Enter guests quantity"
                     {...field}
@@ -80,10 +82,11 @@ export const AddMyNameForm = ({postId}:JoinPostFormProps) => {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button disabled={isPending} type="submit">
+            Submit
+          </Button>
         </form>
       </Form>
     </div>
   );
 };
-

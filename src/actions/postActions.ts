@@ -30,6 +30,22 @@ const createPostAction = async (formData: FormData, postId?: string) => {
   }
 
   try {
+    // Check if the user already created a post for the same date
+    const { data: existingPost, error: fetchError } = await supabase
+      .from("posts")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("host_date", postData.hostDate.toISOString().split('T')[0])
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116: No rows found
+      throw new Error(fetchError.message);
+    }
+
+    if (existingPost && !postId) {
+      return { errorMessage: "You have already created a post for this date" };
+    }
+
     // Insert a new post or update an existing one
     const { error: upsertError } = await supabase.from("posts").upsert(
       {
@@ -237,6 +253,59 @@ export async function addMyNameAction({
       success: false,
       message:
         error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+}
+
+export async function deleteMyNameAction(postId: string) {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { success: false, message: "Unauthorized: Please log in" };
+    }
+
+    const userId = user.id;
+
+    // Fetch the post guest entry to check if the authenticated user is the creator
+    const { data: postGuest, error: fetchError } = await supabase
+      .from("post_guests")
+      .select("user_id")
+      .eq("post_id", postId)
+      .eq("user_id", userId)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching post guest entry:", fetchError);
+      return { success: false, message: "Error fetching post guest entry" };
+    }
+
+    if (!postGuest) {
+      return { success: false, message: "You are not authorized to delete this entry" };
+    }
+
+    // Delete the user's entry from the "post_guests" table
+    const { error: deleteError } = await supabase
+      .from("post_guests")
+      .delete()
+      .eq("post_id", postId)
+      .eq("user_id", userId);
+
+    if (deleteError) {
+      console.error("Error deleting entry:", deleteError);
+      return { success: false, message: "Error removing your name from the post" };
+    }
+
+    return { success: true, message: "Successfully removed your name from the post" };
+  } catch (error) {
+    console.error("Error:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "An unexpected error occurred",
     };
   }
 }
