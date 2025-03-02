@@ -35,10 +35,11 @@ const createPostAction = async (formData: FormData, postId?: string) => {
       .from("posts")
       .select("id")
       .eq("user_id", user.id)
-      .eq("host_date", postData.hostDate.toISOString().split('T')[0])
+      .eq("host_date", postData.hostDate.toISOString().split("T")[0])
       .single();
 
-    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116: No rows found
+    if (fetchError && fetchError.code !== "PGRST116") {
+      // PGRST116: No rows found
       throw new Error(fetchError.message);
     }
 
@@ -102,6 +103,49 @@ export const fetchPostsAction = async () => {
     return { posts, errorMessage: null };
   } catch (error) {
     console.error("FetchPostsAction error:", error);
+    return {
+      posts: [],
+      errorMessage:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+};
+
+export const fetchMyPostsAction = async () => {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return { posts: [], errorMessage: "User not authenticated" };
+  }
+
+  try {
+    const { data: posts, error: fetchError } = await supabase
+      .from("posts")
+      .select(
+        `
+      *,
+      user:users!posts_user_id_users_id_fk (
+        full_name,
+        phone
+      ),
+      post_guests (
+        group_size,
+        user:users (
+          id,
+          full_name,
+          phone
+        )
+      )
+    `
+      )
+      .eq("user_id", user?.id);
+
+    if (fetchError) throw new Error(fetchError.message);
+
+    return { posts, errorMessage: null };
+  } catch (error) {
+    console.error("FetchMyPostsAction error:", error);
     return {
       posts: [],
       errorMessage:
@@ -178,16 +222,60 @@ export async function addMyNameAction({
       return { success: false, message: "Invalid input data" };
     }
 
-    // Fetch post max_guests
+    // Fetch the event date of the post
     const { data: post, error: postError } = await supabase
       .from("posts")
-      .select("max_guests")
+      .select("max_guests, host_date")
       .eq("id", postId)
       .single();
 
     if (postError) {
       console.error("Error fetching post:", postError);
       return { success: false, message: "Error fetching post details" };
+    }
+
+    const eventDate = post.host_date;
+
+    // Check if user has already joined another post on the same date
+    const { data: existingEntry, error: existingError } = await supabase
+      .from("post_guests")
+      .select("post_id")
+      .eq("user_id", userId)
+      .order("post_id", { ascending: false });
+
+    if (existingError) {
+      console.error("Error checking existing entry:", existingError);
+      return {
+        success: false,
+        message: "Error verifying existing registration",
+      };
+    }
+
+    if (existingEntry.length > 0) {
+      // Get the post details for the user's existing entry
+      const { data: existingPost, error: existingPostError } = await supabase
+        .from("posts")
+        .select("host_date")
+        .eq("id", existingEntry[0].post_id)
+        .single();
+
+      if (existingPostError) {
+        console.error(
+          "Error fetching existing post details:",
+          existingPostError
+        );
+        return {
+          success: false,
+          message: "Error verifying existing registration",
+        };
+      }
+
+      if (existingPost.host_date === eventDate) {
+        return {
+          success: false,
+          message: "You have already joined a post for this date.",
+        };
+      }
     }
 
     // Fetch total guests already joined
@@ -203,8 +291,10 @@ export async function addMyNameAction({
 
     // Calculate current total guests
     const totalJoined = joinedGuests.reduce((sum, g) => sum + g.group_size, 0);
-    const existingEntry = joinedGuests.find((g) => g.user_id === userId);
-    const previousGroupSize = existingEntry ? existingEntry.group_size : 0;
+    const existingGuestEntry = joinedGuests.find((g) => g.user_id === userId);
+    const previousGroupSize = existingGuestEntry
+      ? existingGuestEntry.group_size
+      : 0;
 
     // Calculate available seats considering previous groupSize
     const seatsOpen = post.max_guests - (totalJoined - previousGroupSize);
@@ -217,7 +307,7 @@ export async function addMyNameAction({
       };
     }
 
-    if (existingEntry) {
+    if (existingGuestEntry) {
       // Update existing entry
       const { error: updateError } = await supabase
         .from("post_guests")
@@ -285,7 +375,10 @@ export async function deleteMyNameAction(postId: string) {
     }
 
     if (!postGuest) {
-      return { success: false, message: "You are not authorized to delete this entry" };
+      return {
+        success: false,
+        message: "You are not authorized to delete this entry",
+      };
     }
 
     // Delete the user's entry from the "post_guests" table
@@ -297,15 +390,22 @@ export async function deleteMyNameAction(postId: string) {
 
     if (deleteError) {
       console.error("Error deleting entry:", deleteError);
-      return { success: false, message: "Error removing your name from the post" };
+      return {
+        success: false,
+        message: "Error removing your name from the post",
+      };
     }
 
-    return { success: true, message: "Successfully removed your name from the post" };
+    return {
+      success: true,
+      message: "Successfully removed your name from the post",
+    };
   } catch (error) {
     console.error("Error:", error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : "An unexpected error occurred",
+      message:
+        error instanceof Error ? error.message : "An unexpected error occurred",
     };
   }
 }

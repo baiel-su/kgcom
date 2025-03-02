@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/authContext";
-import { LogOut, User } from "lucide-react";
+import { List, LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { JSX, SVGProps, useEffect, useState } from "react";
@@ -76,10 +76,18 @@ export default function Navbar() {
                             Edit Profile
                           </div>
                         </SheetTrigger>
+
                         <SheetContent>
                           <UserProfileComponent />
                         </SheetContent>
                       </Sheet>
+                      <hr />
+                      <NavigationMenuLink href="/user-profile/my-posts">
+                        <div className="flex items-center text-sm gap-4">
+                          <List />
+                          My Posts
+                        </div>
+                      </NavigationMenuLink>
                       <hr />
                       <NavigationMenuLink>
                         <div className="flex items-center text-sm gap-4">
@@ -165,6 +173,13 @@ export default function Navbar() {
                           <UserProfileComponent />
                         </SheetContent>
                       </Sheet>
+                      <hr />
+                      <NavigationMenuLink href="/user-profile/my-posts">
+                        <div className="flex items-center text-sm gap-4">
+                          <List />
+                          My Posts
+                        </div>
+                      </NavigationMenuLink>
                       <hr />
                       <NavigationMenuLink>
                         <div className="flex items-center text-sm gap-4">

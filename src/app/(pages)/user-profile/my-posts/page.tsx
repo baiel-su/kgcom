@@ -7,20 +7,22 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 import { IftarCard } from "@/components/forms/iftarCard";
-import useFetchPosts, { IPost } from "@/hooks/use-fetch-posts";
+import useFetchMyPosts from "@/hooks/use-fetch-my-posts";
+import { IPost } from "@/hooks/use-fetch-posts";
 import dayjs from "dayjs";
 import Link from "next/link";
 
-export default function IftarFinderPage() {
+export default function MyPosts() {
   const [date, setDate] = useState<Date | undefined>(undefined);
-  const { posts, error } = useFetchPosts();
+
+  const { posts, error } = useFetchMyPosts();
   const [filteredPosts, setFilteredPosts] = useState<IPost[] | null>(null);
 
   useEffect(() => {
@@ -36,7 +38,10 @@ export default function IftarFinderPage() {
       setFilteredPosts(posts); //show all posts if no date is selected.
     }
   }, [posts, date]);
-  
+
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -64,17 +69,15 @@ export default function IftarFinderPage() {
             </PopoverContent>
           </Popover>
           <Link href="/ramadan/post/create-post">
-            <Button>Host an Iftar</Button>
+            <Button>Host Iftar</Button>
           </Link>
         </div>
 
         {filteredPosts && filteredPosts?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPosts?.map((offer) => {
-              const seatsLeft =
-                offer.max_guests - offer.post_guests.reduce((a, c) => a + c.group_size, 0);
-              return <IftarCard key={offer.id} offer={offer} seatsLeft={seatsLeft} />;
-            })}
+            {filteredPosts?.map((offer) => (
+              <IftarCard key={offer.id} offer={offer} />
+            ))}
           </div>
         ) : (
           <p className="text-center text-xl text-muted-foreground">
@@ -85,5 +88,3 @@ export default function IftarFinderPage() {
     </div>
   );
 }
-
-
