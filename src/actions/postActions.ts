@@ -104,6 +104,7 @@ export const fetchSinglePostAction = async (postId: string) => {
         `
         *,
         user:users!posts_user_id_users_id_fk (
+        id,
           full_name,
           phone
         ),
