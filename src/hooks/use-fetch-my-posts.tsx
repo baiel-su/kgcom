@@ -1,4 +1,4 @@
-import { fetchPostsAction } from "@/actions/postActions"; // Import your fetchPostsAction
+import { fetchMyPostsAction } from "@/actions/postActions"; // Import your fetchPostsAction
 import { useEffect, useState } from "react";
 
 export interface IPost {
@@ -31,7 +31,7 @@ interface UseFetchPostsResult {
   refetch: () => void; // Add refetch functionality
 }
 
-const useFetchPosts = (): UseFetchPostsResult => {
+const useFetchMyPosts = (): UseFetchPostsResult => {
   const [posts, setPosts] = useState<IPost[] | null>(null); // Initialize as null
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,7 @@ const useFetchPosts = (): UseFetchPostsResult => {
     setError(null); // Clear previous errors
 
     try {
-      const { posts: fetchedPosts, errorMessage } = await fetchPostsAction();
+      const { posts: fetchedPosts, errorMessage } = await fetchMyPostsAction();
 
       if (errorMessage) {
         setError(errorMessage);
@@ -72,4 +72,4 @@ const useFetchPosts = (): UseFetchPostsResult => {
   return { posts, error, loading, refetch };
 };
 
-export default useFetchPosts;
+export default useFetchMyPosts;

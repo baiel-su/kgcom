@@ -35,7 +35,12 @@ export const DeletePost = ({ postId, userId }: JoinPostFormProps) => {
   };
 
   return (
-    <Button onClick={handleDeletePost} variant="destructive" disabled={isPending} className="w-full">
+    <Button
+      onClick={handleDeletePost}
+      variant="nothing"
+      size={"nothing"}
+      disabled={isPending}
+    >
       Delete
     </Button>
   );
