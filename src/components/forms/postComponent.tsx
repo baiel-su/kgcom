@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 
 const PostComponent: React.FC<{ post: IPost }> = ({ post }) => {
+  console.log('post', post)
   return (
     <div>
       <div className="border rounded-xl bg-gray-50 p-2">
@@ -35,6 +36,7 @@ const PostComponent: React.FC<{ post: IPost }> = ({ post }) => {
           <label className="font-semibold">Hosting Date: </label>
           <span>
             {new Date(post.host_date).toLocaleDateString("en-US", {
+              timeZone: "UTC",
               year: "numeric",
               month: "long",
               day: "numeric",

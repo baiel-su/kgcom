@@ -1,11 +1,11 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/authContext";
 import { List, LogOut, User } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { JSX, SVGProps, useEffect, useState } from "react";
+import { JSX, SVGProps } from "react";
 import SignOutButton from "../signOutButton/signOutButton";
 import {
   NavigationMenu,
@@ -16,6 +16,7 @@ import {
   NavigationMenuTrigger,
 } from "../ui/navigation-menu";
 import UserProfileComponent from "../userProfile/userProfile";
+import { MobileNavbar } from "./mobile-nav";
 
 const links = [
   { href: "/", label: "Home" },
@@ -27,11 +28,6 @@ const links = [
 export default function Navbar() {
   const pathname = usePathname();
 
-  const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
-
   const { user } = useAuth();
   console.log(user);
   const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
@@ -42,7 +38,30 @@ export default function Navbar() {
 
   return (
     <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      {/* mobile */}
+      <div className="flex justify-between w-full lg:hidden">
+        <div className="flex items-center justify-between w-full">
+          <Image
+            src="/bread.png"
+            alt="Logo"
+            width={65} // Adjust the width as needed
+            height={65} // Adjust the height as needed
+            className=" text-center" // Adds margin below the logo
+          />
+          {user ? (
+            <span>{user.email}</span>
+          ) : (
+            <Link
+              href="/auth/sign-in"
+              className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-800"
+            >
+              Sign In
+            </Link>
+          )}
+          <MobileNavbar userId={user?.id as string} />
+        </div>
+      </div>
+      {/* <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex justify-between w-full lg:hidden">
           <SheetTrigger asChild>
             <Button
@@ -124,7 +143,9 @@ export default function Navbar() {
             ))}
           </div>
         </SheetContent>
-      </Sheet>
+      </Sheet> */}
+
+      {/* large screen */}
       <nav className="w-full hidden lg:flex lg:justify-between sm:items-center">
         <div>
           <Link href="#" className="mr-6 hidden lg:flex" prefetch={false}>
@@ -202,27 +223,6 @@ export default function Navbar() {
         </div>
       </nav>
     </header>
-  );
-}
-
-function MenuIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="4" x2="20" y1="12" y2="12" />
-      <line x1="4" x2="20" y1="6" y2="6" />
-      <line x1="4" x2="20" y1="18" y2="18" />
-    </svg>
   );
 }
 

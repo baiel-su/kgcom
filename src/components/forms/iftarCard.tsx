@@ -35,12 +35,13 @@ export function IftarCard({
       <CardContent>
         <div className="flex flex-col gap-1 mb-2">
           <span className="">Iftar date:{' '}
-            {new Date(offer.host_date).toLocaleDateString("en-US", {
+          {new Date(offer.host_date).toLocaleDateString("en-US", {
+              timeZone: "UTC",
               year: "numeric",
               month: "long",
               day: "numeric",
-              
             })}
+
           </span>
           <span className="">
             Guests invited: <span>{offer.max_guests}</span>
