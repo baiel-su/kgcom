@@ -1,4 +1,6 @@
 import { IPost } from "@/hooks/use-fetch-posts";
+import Link from "next/link";
+import { Button } from "../ui/button";
 import {
   Card,
   CardContent,
@@ -6,8 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import Link from "next/link";
-import { Button } from "../ui/button";
 
 export function IftarCard({
   offer,
@@ -33,10 +33,20 @@ export function IftarCard({
         <CardDescription>Address: {offer.address}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div></div>
-        <h3 className="mb-2">
-          Guests invited: <span>{offer.max_guests}</span>
-        </h3>
+        <div className="flex flex-col gap-1 mb-2">
+          <span className="">Iftar date:{' '}
+            {new Date(offer.host_date).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              
+            })}
+          </span>
+          <span className="">
+            Guests invited: <span>{offer.max_guests}</span>
+          </span>
+        </div>
+
         <div className="flex justify-between items-center">
           <Link
             href={`/ramadan/post/${offer.id}`}
