@@ -7,12 +7,11 @@ export async function updateProfile(formData: FormData) {
   const supabase = await createSupabaseServerClient();
   const data = {
     full_name: formData.get("full_name") as string,
-    address: formData.get("address") as string,
     phone: formData.get("phone") as string,
   };
 
   // Check if required fields are available
-  if (!data.full_name || !data.address || !data.phone) {
+  if (!data.full_name || !data.phone) {
     return { errorMessage: "All fields are required" };
   }
 
@@ -40,7 +39,6 @@ export async function updateProfile(formData: FormData) {
     const { error: updateError } = await supabase.from("users").upsert({
       id: user.id,
       full_name: data.full_name,
-      address: data.address,
       phone: data.phone,
       email: userProfile.email, // Include the current email value
       password: userProfile.password, // Include the current password value

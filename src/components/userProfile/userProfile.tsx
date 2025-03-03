@@ -24,7 +24,6 @@ const UserProfileComponent: React.FC = () => {
     resolver: zodResolver(userSchema),
     defaultValues: {
       full_name: "",
-      address: "",
       phone: "",
     },
   });
@@ -33,9 +32,9 @@ const UserProfileComponent: React.FC = () => {
     null
   );
   const { setValue } = form;
-  
+
   if (userData) {
-    console.log('d')
+    console.log("d");
   }
   useEffect(() => {
     const getUserData = async () => {
@@ -44,7 +43,6 @@ const UserProfileComponent: React.FC = () => {
       setUserData(data);
       if (data) {
         setValue("full_name", data.full_name);
-        setValue("address", data.address);
         setValue("phone", data.phone);
       }
     };
@@ -127,7 +125,12 @@ const UserProfileComponent: React.FC = () => {
             )}
           />
           <div className="flex flex-col gap-4">
-            <Link href={"/auth/reset-password"} className="text-blue-500 hover:underline">Reset Password</Link>
+            <Link
+              href={"/auth/reset-password"}
+              className="text-blue-500 hover:underline"
+            >
+              Reset Password
+            </Link>
             <Button type="submit">Submit</Button>
           </div>
         </form>
@@ -140,7 +143,6 @@ export default UserProfileComponent;
 
 const userSchema = z.object({
   full_name: z.string().nonempty({ message: "First name is required" }),
-  address: z.string().nonempty({ message: "Address is required" }),
   phone: z
     .string()
     .nonempty({ message: "Phone number is required" })
