@@ -17,6 +17,7 @@ import {
 } from "../ui/navigation-menu";
 import UserProfileComponent from "../userProfile/userProfile";
 import { MobileNavbar } from "./mobile-nav";
+import { ModeToggle } from "../dark-mode/dark-mode";
 
 const links = [
   { href: "/", label: "Home" },
@@ -51,99 +52,19 @@ export default function Navbar() {
           {user ? (
             <span>{user.email}</span>
           ) : (
-            <Link
-              href="/auth/sign-in"
-              className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-800"
-            >
-              Sign In
-            </Link>
+            <div className="flex items-center gap-2">
+              <ModeToggle />
+              <Link
+                href="/auth/sign-in"
+                className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-800"
+              >
+                Sign In
+              </Link>
+            </div>
           )}
           <MobileNavbar userId={user?.id as string} />
         </div>
       </div>
-      {/* <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <div className="flex justify-between w-full lg:hidden">
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setIsOpen(true)}
-            >
-              <MenuIcon className="h-6 w-6" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-
-          {user ? (
-            <NavigationMenu className="w-full">
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <div>
-                    {" "}
-                    <span className="p-1 px-2 text-sm bg-gray-100 text-gray-400 rounded-md">
-                      beta
-                    </span>
-                    <NavigationMenuTrigger>{user?.email}</NavigationMenuTrigger>
-                  </div>
-                  <NavigationMenuContent>
-                    <ul className="flex flex-col gap-3 max-w-[400px] p-4 md:max-w-[500px] lg:max-w-[600px] lg:min-w-[150px]">
-                      <Sheet>
-                        <SheetTrigger className="text-sm">
-                          <div className="flex items-center gap-4">
-                            <User />
-                            Edit Profile
-                          </div>
-                        </SheetTrigger>
-
-                        <SheetContent>
-                          <UserProfileComponent />
-                        </SheetContent>
-                      </Sheet>
-                      <hr />
-                      <NavigationMenuLink href="/user-profile/my-posts">
-                        <div className="flex items-center text-sm gap-4">
-                          <List />
-                          My Posts
-                        </div>
-                      </NavigationMenuLink>
-                      <hr />
-                      <NavigationMenuLink>
-                        <div className="flex items-center text-sm gap-4">
-                          <LogOut /> <SignOutButton />
-                        </div>
-                      </NavigationMenuLink>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-          ) : (
-            <Link
-              href="/auth/sign-in"
-              onClick={() => setIsOpen(false)}
-              className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-800"
-            >
-              Sign In
-            </Link>
-          )}
-        </div>
-
-        <SheetContent side="left">
-          <div className="grid gap-2 py-6">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsOpen(false)} // Close on link click
-                className="flex w-full items-center py-2 text-lg font-semibold"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </SheetContent>
-      </Sheet> */}
 
       {/* large screen */}
       <nav className="w-full hidden lg:flex lg:justify-between sm:items-center">
@@ -171,7 +92,7 @@ export default function Navbar() {
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <div>
-                    {" "}
+                    <ModeToggle />
                     <span className="p-1 px-2 text-sm bg-gray-100 text-gray-400 rounded-md">
                       beta
                     </span>
