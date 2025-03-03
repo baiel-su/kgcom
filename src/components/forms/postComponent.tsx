@@ -34,7 +34,13 @@ const PostComponent: React.FC<{ post: IPost }> = ({ post }) => {
         </p>
         <p>
           <label className="font-semibold">Hosting Date: </label>
-          <span>{dayjs(post.host_date).format("MM-DD-YYYY")}</span>
+          <span>
+            {new Date(post.host_date).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </span>
         </p>
         <p className="text-gray-700">
           <label className="font-semibold">Phone: </label>
