@@ -6,12 +6,12 @@ const PostComponent: React.FC<{ post: IPost }> = ({ post }) => {
   console.log('post', post)
   return (
     <div>
-      <div className="border rounded-xl bg-gray-50 p-2">
-        <p className="text-gray-700">
+      <div className="border rounded-xl light:bg-gray-50 p-2">
+        <p className="">
           <label className="font-semibold">Gender: </label>
           <span>{post.gender}</span>
         </p>
-        <p className="text-gray-700">
+        <p className="">
           <label className="font-semibold">Address: </label>
           <Link
             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -24,16 +24,16 @@ const PostComponent: React.FC<{ post: IPost }> = ({ post }) => {
             {post.address}
           </Link>
         </p>
-        <p className="text-gray-700">
+        <p className="">
           <label className="font-semibold">Number of guests invited: </label>
           <span>{post.max_guests}</span>
         </p>
-        <p className="text-gray-700">
+        <p className="">
           <label className="font-semibold">Iftar Mode: </label>
           <span>{post.iftar_type === "dine_in" ? "Dine in" : "Take out"}</span>
         </p>
         <p>
-          <label className="font-semibold">Hosting Date: </label>
+          <label className="font-semibold">Iftar Date: </label>
           <span>
             {new Date(post.host_date).toLocaleDateString("en-US", {
               timeZone: "UTC",
@@ -43,7 +43,7 @@ const PostComponent: React.FC<{ post: IPost }> = ({ post }) => {
             })}
           </span>
         </p>
-        <p className="text-gray-700">
+        <p className="">
           <label className="font-semibold">Phone: </label>
           <Link
             href={`https://wa.me/+1${post.user.phone}`}

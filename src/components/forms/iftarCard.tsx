@@ -22,7 +22,7 @@ export function IftarCard({
   const isFull = seatsLeft === 0;
   return (
     <Card
-      className={isFull ? "bg-gray-200 pointer-events-none opacity-75" : ""}
+      className={isFull ? " dark:bg-cyan-800 bg-gray-300 pointer-events-none opacity-75" : "dark:bg-slate-800"}
     >
       <CardHeader>
         <CardTitle className="font-semibold">
@@ -34,6 +34,7 @@ export function IftarCard({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-1 mb-2">
+          <span>Gender:{' '}{offer.gender}</span>
           <span className="">Iftar date:{' '}
           {new Date(offer.host_date).toLocaleDateString("en-US", {
               timeZone: "UTC",
