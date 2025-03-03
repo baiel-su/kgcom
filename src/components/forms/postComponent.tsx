@@ -1,5 +1,4 @@
 import { IPost } from "@/hooks/use-fetch-posts";
-import dayjs from "dayjs";
 import Link from "next/link";
 import React from "react";
 
