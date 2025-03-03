@@ -88,7 +88,7 @@ const CreatePost = () => {
     });
   };
   return (
-    <div className="max-w-lg mx-auto p-4 sm:p-6 lg:p-8">
+    <div className="max-w-lg mx-auto p-4 sm:p-6 lg:p-8 border rounded-xl">
       <h1 className="text-2xl font-bold mb-4">Create a New Post</h1>
       <p className="mb-6 text-gray-600">
         Fill out the form below to create a new post for the Ramadan event.

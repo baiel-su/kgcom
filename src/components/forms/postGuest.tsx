@@ -6,7 +6,7 @@ const PostGuest: React.FC<{ post: IPost}> = ({
   post,
 }) => {
   return (
-    <div>
+    <div className="">
       {post.post_guests.length > 0 &&
         post.post_guests.map((guest, index) => (
           <div className="my-4" key={index}>
@@ -17,16 +17,16 @@ const PostGuest: React.FC<{ post: IPost}> = ({
             >
               <div className="absolute top-2 right-2">
               </div>
-              <p className="text-gray-700">
+              <p className="">
                 <label className="font-semibold">Name: </label>
                 <span>{guest.user.full_name}</span>
               </p>
-              <p className="text-gray-700">
+              <p className="">
                 <label className="font-semibold">Group size: </label>
                 <span>{guest.group_size} guest(s)</span>
               </p>
               <p>
-                <label className="font-semibold">Phone number </label>
+                <label className="font-semibold">Phone: </label>
                 <Link
                   href={`https://wa.me/+1${guest.user.phone}`}
                   className="text-blue-500 hover:underline"

@@ -49,19 +49,22 @@ export default function Navbar() {
             height={65} // Adjust the height as needed
             className=" text-center" // Adds margin below the logo
           />
-          {user ? (
-            <span>{user.email}</span>
-          ) : (
-            <div className="flex items-center gap-2">
-              <ModeToggle />
-              <Link
-                href="/auth/sign-in"
-                className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-800"
-              >
-                Sign In
-              </Link>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <ModeToggle />
+            {user ? (
+              <span>{user.email}</span>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/auth/sign-in"
+                  className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-800"
+                >
+                  Sign In
+                </Link>
+              </div>
+            )}
+          </div>
+
           <MobileNavbar userId={user?.id as string} />
         </div>
       </div>
@@ -86,16 +89,18 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
-        <div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <span className="p-1 px-2 text-sm bg-gray-100 dark:bg-transparent text-gray-400 rounded-md">
+              beta
+            </span>
+            <ModeToggle />
+          </div>
           {user ? (
             <NavigationMenu className="w-full">
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <div>
-                    <ModeToggle />
-                    <span className="p-1 px-2 text-sm bg-gray-100 text-gray-400 rounded-md">
-                      beta
-                    </span>
+                  <div className="flex items-center gap-2">
                     <NavigationMenuTrigger
                       onPointerMove={(e) => e.preventDefault()}
                     >
@@ -136,7 +141,7 @@ export default function Navbar() {
           ) : (
             <Link
               href={"/auth/sign-in"}
-              className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+              className="text-black group inline-flex h-9 w-max items-center justify-center rounded-md bg-gray-200 dark:bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50  dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
             >
               Sign In
             </Link>

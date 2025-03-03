@@ -68,7 +68,7 @@ export const AddMyNameForm = ({ postId }: JoinPostFormProps) => {
                 <FormLabel>Guests quantity</FormLabel>
                 <FormControl>
                   <Input
-                  className="bg-white"
+                  className=""
                     type="number"
                     placeholder="Enter guests quantity"
                     {...field}

@@ -46,17 +46,17 @@ export default function PostClient() {
     <div className="p-4 max-w-xl mx-auto font-sans relative">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-gray-900">
+          <CardTitle className="text-2xl ">
             Host: {post.user.full_name}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-1">
+        <CardContent className="space-y-1 ">
           {isClicked ? (
             <PostForm post={post} />
           ) : (
             <div className="">
               <PostComponent post={post} />
-              <div className="p-2 border rounded-xl bg-gray-50 my-4 relative">
+              <div className="p-2 border rounded-xl my-4 relative">
                 {isGuestClicked ? (
                   <AddMyNameForm postId={post.id} />
                 ) : (
