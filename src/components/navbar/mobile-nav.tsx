@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import type React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Home, Calendar, PlusCircle, MessageSquare, User } from "lucide-react"
+import type React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home, Calendar, PlusCircle, MessageSquare, User } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface NavItem {
-  label: string
-  href: string
-  icon: React.ReactNode
+  label: string;
+  href: string;
+  icon: React.ReactNode;
 }
 
 export function MobileNavbar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const navItems: NavItem[] = [
     {
@@ -43,13 +43,13 @@ export function MobileNavbar() {
       href: "/user",
       icon: <User className="h-5 w-5" />,
     },
-  ]
+  ];
 
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full border-t bg-background">
       <div className="grid h-16 grid-cols-5">
         {navItems.map((item) => {
-          const isActive = pathname === item.href
+          const isActive = pathname === item.href;
 
           return (
             <Button
@@ -59,7 +59,7 @@ export function MobileNavbar() {
               className={cn(
                 "flex h-full flex-col items-center justify-center rounded-none",
                 item.label === "Create" && "relative",
-                isActive && "bg-muted",
+                isActive && "bg-muted"
               )}
             >
               <Link href={item.href}>
@@ -70,14 +70,19 @@ export function MobileNavbar() {
                 ) : (
                   item.icon
                 )}
-                <span className={cn("mt-1 text-xs", isActive ? "font-medium" : "text-muted-foreground")}>
+                <span
+                  className={cn(
+                    "mt-1 text-xs",
+                    isActive ? "font-medium" : "text-muted-foreground"
+                  )}
+                >
                   {item.label}
                 </span>
               </Link>
             </Button>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
