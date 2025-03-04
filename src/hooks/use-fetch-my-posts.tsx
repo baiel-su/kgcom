@@ -73,3 +73,5 @@ const useFetchMyPosts = (): UseFetchPostsResult => {
 };
 
 export default useFetchMyPosts;
+
+

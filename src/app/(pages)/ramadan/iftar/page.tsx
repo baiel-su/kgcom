@@ -27,20 +27,30 @@ export default function IftarFinderPage() {
     if (posts && date) {
       const formattedDate = dayjs(date).format("MM-DD-YYYY"); // Format the selected date
 
-      const filtered = posts.filter((post) => {
-        const postDate = dayjs(post.host_date).format("MM-DD-YYYY"); // Assuming createdAt is in YYYY-MM-DD format
-        return postDate === formattedDate;
-      });
+      const filtered = posts
+        .filter((post) => {
+          const postDate = dayjs(post.host_date).format("MM-DD-YYYY"); // Assuming createdAt is in YYYY-MM-DD format
+          return postDate === formattedDate;
+        })
+        .sort(
+          (a, b) =>
+            new Date(a.host_date).getTime() - new Date(b.host_date).getTime()
+        ); // Sort by host_date ascending
       setFilteredPosts(filtered);
     } else {
-      setFilteredPosts(posts); //show all posts if no date is selected.
+      const sortedPosts = (posts ?? []).sort(
+        (a, b) =>
+          new Date(a.host_date).getTime() - new Date(b.host_date).getTime()
+      ); // Sort all posts by host_date ascending
+      setFilteredPosts(sortedPosts);
     }
   }, [posts, date]);
-  
 
   if (error) {
     return <div>Error: {error}</div>;
   }
+
+
   return (
     <div className="container mx-auto py-10 px-4">
       <h1 className="text-4xl font-bold">Iftar Schedule</h1>
@@ -72,8 +82,11 @@ export default function IftarFinderPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredPosts?.map((offer) => {
               const seatsLeft =
-                offer.max_guests - offer.post_guests.reduce((a, c) => a + c.group_size, 0);
-              return <IftarCard key={offer.id} offer={offer} seatsLeft={seatsLeft} />;
+                offer.max_guests -
+                offer.post_guests.reduce((a, c) => a + c.group_size, 0);
+              return (
+                <IftarCard key={offer.id} offer={offer} seatsLeft={seatsLeft} />
+              );
             })}
           </div>
         ) : (
@@ -85,5 +98,3 @@ export default function IftarFinderPage() {
     </div>
   );
 }
-
-

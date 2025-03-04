@@ -38,9 +38,7 @@ const formSchema = z.object({
   gender: z.enum(["men", "women", "mixed"]).refine((val) => val !== undefined, {
     message: "Gender is required",
   }),
-  hostDate: z.date().refine((val) => val !== undefined, {
-    message: "Host date is required",
-  }),
+  hostDate: z.string(),
 });
 
 interface PostFormProps {
@@ -55,7 +53,7 @@ const PostForm = ({ post }: PostFormProps) => {
       iftar_type: "dine_in",
       max_guests: 0,
       gender: "men",
-      hostDate: new Date(),
+      hostDate: "",
     },
   });
   const router = useRouter();
@@ -70,8 +68,8 @@ const PostForm = ({ post }: PostFormProps) => {
         setValue("address", post.address);
         setValue("iftar_type", post.iftar_type as "dine_in" | "take_out");
         setValue("max_guests", post.max_guests);
-        setValue("hostDate", new Date(post.host_date));
-        setValue('gender', post.gender as 'men'|'women'|'mixed');
+        // setValue("hostDate", post.host_date);
+        setValue("gender", post.gender as "men" | "women" | "mixed");
       }
     };
 
@@ -84,7 +82,7 @@ const PostForm = ({ post }: PostFormProps) => {
     formData.append("address", form.getValues().address);
     formData.append("iftar_type", form.getValues().iftar_type);
     formData.append("max_guests", form.getValues().max_guests.toString());
-    formData.append("hostDate", form.getValues().hostDate.toString());
+    formData.append("hostDate", form.getValues().hostDate);
     // console.log(form.getValues());
     startTransition(async () => {
       const { errorMessage } = await createPostAction(formData, post.id);
@@ -112,7 +110,7 @@ const PostForm = ({ post }: PostFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-2">
+        <div className="space-y-4">
           <FormField
             control={form.control}
             name="address"
@@ -185,8 +183,16 @@ const PostForm = ({ post }: PostFormProps) => {
             control={form.control}
             name="hostDate"
             render={({ field }) => (
-              <FormItem className="flex flex-col gap-1">
-                <FormLabel>Hosting date</FormLabel>
+              <FormItem className="flex flex-col gap-1 mt-2">
+                <FormLabel>
+                  Changing hosting date for:{" "}
+                  {new Date(post.host_date).toLocaleDateString("en-US", {
+                    timeZone: "UTC",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </FormLabel>
                 <FormControl>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -208,10 +214,12 @@ const PostForm = ({ post }: PostFormProps) => {
                     <PopoverContent className="w-auto p-0">
                       <Calendar
                         mode="single"
-                        selected={field.value || new Date()}
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
                         onSelect={(date) => {
                           field.onChange(date);
-                          setValue("hostDate", date || new Date());
+                          setValue("hostDate", date ? date.toISOString() : "");
                         }}
                         autoFocus
                         disabled={(date) => date < new Date()}
@@ -265,7 +273,9 @@ const PostForm = ({ post }: PostFormProps) => {
             )}
           />
         </div>
-        <Button type="submit" className="w-full">Submit</Button>
+        <Button type="submit" className="w-full">
+          Submit
+        </Button>
       </form>
     </Form>
   );
