@@ -154,6 +154,51 @@ export const fetchMyPostsAction = async () => {
   }
 };
 
+export const fetchJoinedPostsAction = async () => {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return { posts: [], errorMessage: "User not authenticated" };
+  }
+
+  try {
+    const { data: joinedPosts, error: fetchError } = await supabase
+      .from("post_guests")
+      .select(
+        `
+        post:posts (
+          *,
+          user:users!posts_user_id_users_id_fk (
+            full_name,
+            phone
+          ),
+          post_guests (
+            group_size,
+            user:users (
+              id,
+              full_name,
+              phone
+            )
+          )
+        )
+      `
+      )
+      .eq("user_id", user.id);
+
+    if (fetchError) throw new Error(fetchError.message);
+
+    return { posts: joinedPosts.map((entry) => entry.post), errorMessage: null };
+  } catch (error) {
+    console.error("FetchJoinedPostsAction error:", error);
+    return {
+      posts: [],
+      errorMessage:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+};
+
 export const fetchSinglePostAction = async (postId: string) => {
   const supabase = await createSupabaseServerClient();
 

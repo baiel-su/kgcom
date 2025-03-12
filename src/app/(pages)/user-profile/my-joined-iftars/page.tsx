@@ -14,16 +14,16 @@ import {
 import { cn } from "@/lib/utils";
 
 import { IftarCard } from "@/components/forms/iftarCard";
-import useFetchMyPosts from "@/hooks/use-fetch-my-posts";
+import Loader from "@/components/loader/loader";
+import useFetchMyJoinedIftars from "@/hooks/fetch-user-joined-iftar";
 import { IPost } from "@/hooks/use-fetch-posts";
 import dayjs from "dayjs";
 import Link from "next/link";
-import Loader from "@/components/loader/loader";
 
 export default function MyPosts() {
   const [date, setDate] = useState<Date | undefined>(undefined);
 
-  const { posts,loading, error } = useFetchMyPosts();
+  const { posts, loading, error } = useFetchMyJoinedIftars();
   const [filteredPosts, setFilteredPosts] = useState<IPost[] | null>(null);
 
   useEffect(() => {
@@ -41,9 +41,11 @@ export default function MyPosts() {
   }, [posts, date]);
 
   if (loading) {
-    return   <div className="flex justify-center items-center h-screen">
-    <Loader />
-  </div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
   }
 
   if (error) {

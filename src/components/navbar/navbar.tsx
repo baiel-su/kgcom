@@ -22,7 +22,7 @@ import { ModeToggle } from "../dark-mode/dark-mode";
 const links = [
   { href: "/", label: "Home" },
   { href: "/ramadan/iftar", label: "Iftar" },
-  // { href: "#", label: "Services" },
+  { href: "/create-iftar", label: "Create Iftar" },
   // { href: "/sds", label: "Contact" },
 ];
 
@@ -125,6 +125,13 @@ export default function Navbar() {
                         <div className="flex items-center text-sm gap-4">
                           <List />
                           My Posts
+                        </div>
+                      </NavigationMenuLink>
+                      <hr />
+                      <NavigationMenuLink href="/user-profile/my-joined-iftars">
+                        <div className="flex items-center text-sm gap-4">
+                          <List />
+                          My Joined Iftars
                         </div>
                       </NavigationMenuLink>
                       <hr />
