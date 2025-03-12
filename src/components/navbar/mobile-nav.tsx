@@ -133,6 +133,16 @@ export function MobileNavbar({ userId }: MobileNavbarProps) {
 
                                 <hr />
                                 <DropdownMenuItem>
+                                    <Link href="/user-profile/my-joined-iftars">
+                                        <div className="flex items-center text-sm gap-4">
+                                            <List />
+                                            My Joined Iftars
+                                        </div>
+                                    </Link>
+                                </DropdownMenuItem>
+
+                                <hr />
+                                <DropdownMenuItem>
                                     <div className="flex items-center text-sm gap-4">
                                         <LogOut /> <SignOutButton />
                                     </div>

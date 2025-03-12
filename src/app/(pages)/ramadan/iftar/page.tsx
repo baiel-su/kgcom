@@ -2,11 +2,13 @@
 
 
 import { IftarCard } from "@/components/forms/iftarCard";
+import Loader from "@/components/loader/loader";
 import FilterPosts from "@/components/post-components/filters";
 import {
   FilterContextProvider,
   useFilterContext,
 } from "@/contexts/filterContext";
+import { useState, useEffect } from "react";
 
 export default function IftarFinderPage() {
   return (
@@ -20,9 +22,24 @@ export default function IftarFinderPage() {
 function IftarFinderContent() {
   const { filteredPosts } = useFilterContext();
 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (filteredPosts) {
+      setLoading(false);
+    }
+  }, [filteredPosts]);
+
+
   return (
     <div className="container mx-auto py-10 px-4">
+        {loading && (
+        <div className="flex justify-center items-center h-screen">
+          <Loader />
+        </div>
+      )}
       <h1 className="text-4xl font-bold">Iftar Schedule</h1>
+    
       <div className="py-10">
         <div className="flex gap-5 mb-8">
           <FilterPosts />

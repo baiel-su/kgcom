@@ -34,9 +34,9 @@ import {
 } from "../ui/sheet";
 
 const formSchema = z.object({
-  iftar_type: z.enum(["dine_in", "take_out"]),
-  gender: z.enum(["men", "women", "mixed"]),
-  hostDate: z.date(),
+  iftar_type: z.enum(["dine_in", "take_out",""]),
+  gender: z.enum(["men", "women", "mixed",""]),
+  hostDate: z.date().nullable(),
 });
 
 const FilterPosts = () => {
@@ -44,9 +44,9 @@ const FilterPosts = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      iftar_type: "dine_in",
-      gender: "men",
-      hostDate: new Date(),
+      iftar_type: "",
+      gender: "",
+      hostDate: null,
     },
   });
 
@@ -55,7 +55,10 @@ const FilterPosts = () => {
   const { setFilters } = useFilterContext();
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    setFilters(data);
+    setFilters({
+      ...data,
+      hostDate: data.hostDate ?? null,
+    });
     setIsSheetOpen(false); // Close sheet on submit
   };
 
@@ -98,7 +101,7 @@ const FilterPosts = () => {
                               >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
                                 {form.watch("hostDate") ? (
-                                  format(form.watch("hostDate"), "PPP")
+                                  form.watch("hostDate") ? format(form.watch("hostDate") as Date, "PPP") : ""
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
@@ -107,7 +110,7 @@ const FilterPosts = () => {
                             <PopoverContent className="w-auto p-0">
                               <Calendar
                                 mode="single"
-                                selected={field.value}
+                                selected={field.value ?? undefined}
                                 onSelect={field.onChange}
                               />
                             </PopoverContent>
@@ -132,7 +135,7 @@ const FilterPosts = () => {
                             defaultValue={field.value}
                             className="flex flex-col space-y-1"
                           >
-                            <FormItem className="flex items-center space-x-3">
+                            <FormItem className="flex items-center jus space-x-3">
                               <FormControl>
                                 <RadioGroupItem value="dine_in" />
                               </FormControl>
