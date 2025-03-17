@@ -1,19 +1,30 @@
-"use client"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Upload, Instagram } from "lucide-react"
-import { useRouter } from "next/navigation"
+"use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Instagram, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { uploadImage } from "@/lib/imageUploader";
+import { useTransition } from "react";
+import createFoodStoreAction from "@/actions/foodStoreActions";
 
 const formSchema = z.object({
-  storeName: z.string().min(2, {
+  store_name: z.string().min(2, {
     message: "Store name must be at least 2 characters.",
   }),
   description: z.string().min(10, {
@@ -22,48 +33,119 @@ const formSchema = z.object({
   address: z.string().min(5, {
     message: "Please enter a valid address.",
   }),
-  phoneNumber: z.string().min(10, {
+  phone: z.string().min(10, {
     message: "Please enter a valid phone number.",
   }),
   instagram: z.string().optional(),
   storeImage: z.any().refine((file) => file, {
     message: "Store image is required",
   }),
-})
+});
 
 export default function CateringApplicationForm() {
-  const { toast } = useToast()
-  const router = useRouter()
+  const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      storeName: "",
+      store_name: "",
       description: "",
       address: "",
-      phoneNumber: "",
+      phone: "",
       instagram: "",
       storeImage: undefined,
     },
-  })
+  });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const [, startTransition] = useTransition();
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Here you would typically send the form data to your backend
-    console.log(values)
+    console.log(values);
+    try {
+      // Ensure the storeImage field contains a file
+      if (!values.storeImage) {
+        toast({
+          title: "Error",
+          description: "Please upload an image",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    // In a real application, you would save the store data to your database
-    // and get the store ID back from the server
-    const mockStoreId = "store_" + Math.random().toString(36).substring(2, 9)
+      // Upload the image using the uploadImage function
+      const { imageUrl, error } = await uploadImage({
+        file: values.storeImage,
+        bucket: "store-images",
+      });
 
-    toast({
-      title: "Store Created Successfully",
-      description: "Redirecting you to create your menu...",
-    })
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to upload image. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    // Redirect to the menu creation page with the store ID
-    setTimeout(() => {
-      router.push(`/catering/create-menu?storeId=${mockStoreId}`)
-    }, 1500) // Short delay to show the toast
+      // Log the uploaded image URL (or use it in your application logic)
+      console.log("Image uploaded successfully:", imageUrl);
+
+      // Proceed with saving the form data (e.g., send it to your backend)
+      // Example: Save the store data along with the image URL
+      const storeData = {
+        ...values,
+        storeImage: imageUrl, // Replace the file with the uploaded image URL
+      };
+
+      console.log("Store data to save:", storeData);
+
+      toast({
+        title: "Store Created Successfully",
+        description: "Redirecting you to create your menu...",
+      });
+
+      // Redirect to the menu creation page
+      setTimeout(() => {
+        router.push(`/catering/create-menu?storeId=mockStoreId`);
+      }, 1500);
+    } catch (err) {
+      console.error("Error during form submission:", err);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    }
+
+    const formData = new FormData();
+    formData.append("store_name", form.getValues().store_name);
+    formData.append("description", form.getValues().description);
+    formData.append("address", form.getValues().address);
+    formData.append("phone", form.getValues().phone);
+    formData.append("instagram", form.getValues().instagram ?? "");
+    formData.append("storeImage", form.getValues().storeImage[0]);
+
+    // console.log(form.getValues());
+    startTransition(async () => {
+      const { errorMessage } = await createFoodStoreAction(formData);
+      if (!errorMessage) {
+        // router.push("/");
+
+        toast({
+          title: "Success",
+          description: "Successfully created a post",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    });
   }
 
   return (
@@ -73,7 +155,7 @@ export default function CateringApplicationForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="storeName"
+              name="store_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Store Name</FormLabel>
@@ -92,10 +174,15 @@ export default function CateringApplicationForm() {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Describe your food catering services" className="min-h-[120px]" {...field} />
+                    <Textarea
+                      placeholder="Describe your food catering services"
+                      className="min-h-[120px]"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
-                    Tell us about your cuisine, specialties, and what makes your food unique.
+                    Tell us about your cuisine, specialties, and what makes your
+                    food unique.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -118,7 +205,7 @@ export default function CateringApplicationForm() {
 
             <FormField
               control={form.control}
-              name="phoneNumber"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
@@ -144,25 +231,38 @@ export default function CateringApplicationForm() {
                         accept="image/*"
                         className="hidden"
                         onChange={(e) => {
-                          const file = e.target.files?.[0]
-                          field.onChange(file)
+                          const file = e.target.files?.[0];
+                          field.onChange(file);
                         }}
                       />
-                      <label htmlFor="storeImage" className="cursor-pointer w-full h-full">
+                      <label
+                        htmlFor="storeImage"
+                        className="cursor-pointer w-full h-full"
+                      >
                         {field.value ? (
                           <div className="flex flex-col items-center">
                             <img
-                              src={field.value ? URL.createObjectURL(field.value) : "/placeholder.svg"}
+                              src={
+                                field.value
+                                  ? URL.createObjectURL(field.value)
+                                  : "/placeholder.svg"
+                              }
                               alt="Store preview"
                               className="w-full max-h-[200px] object-contain mb-2"
                             />
-                            <p className="text-sm text-muted-foreground">Click to change image</p>
+                            <p className="text-sm text-muted-foreground">
+                              Click to change image
+                            </p>
                           </div>
                         ) : (
                           <div className="flex flex-col items-center">
                             <Upload className="h-10 w-10 text-muted-foreground mb-2" />
-                            <p className="text-sm font-medium">Click to upload store image</p>
-                            <p className="text-xs text-muted-foreground mt-1">SVG, PNG, JPG or GIF (max. 5MB)</p>
+                            <p className="text-sm font-medium">
+                              Click to upload store image
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              SVG, PNG, JPG or GIF (max. 5MB)
+                            </p>
                           </div>
                         )}
                       </label>
@@ -185,7 +285,10 @@ export default function CateringApplicationForm() {
                       <Input placeholder="Your Instagram handle" {...field} />
                     </div>
                   </FormControl>
-                  <FormDescription>Share your Instagram to help customers find you on social media.</FormDescription>
+                  <FormDescription>
+                    Share your Instagram to help customers find you on social
+                    media.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -198,6 +301,5 @@ export default function CateringApplicationForm() {
         </Form>
       </CardContent>
     </Card>
-  )
+  );
 }
-

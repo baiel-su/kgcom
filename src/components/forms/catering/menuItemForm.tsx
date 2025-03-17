@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Upload } from "lucide-react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Upload } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -37,7 +37,7 @@ type MenuItem = z.infer<typeof formSchema> & {
 }
 
 type MenuItemFormProps = {
-  onSave: (item: any) => void
+  onSave: (item: MenuItem) => void
   onCancel: () => void
   initialData?: Partial<MenuItem> | null
 }
@@ -72,7 +72,8 @@ export default function MenuItemForm({ onSave, onCancel, initialData }: MenuItem
   function onSubmit(values: z.infer<typeof formSchema>) {
     onSave({
       ...values,
-      price: Number.parseFloat(values.price),
+      id: values.id || "",
+      price: values.price.toString(),
     })
   }
 

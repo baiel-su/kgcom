@@ -27,8 +27,12 @@ export const useFetchcurUser = (curUserId: string): UseFetchcurUserResult => {
             try {
                 const curUserData = await fetchcUserProfileAction();
                 setcurUser(curUserData);
-            } catch (err: any) {
-                setError(err.message || 'Failed to fetch curUser profile');
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setError(err.message || 'Failed to fetch curUser profile');
+                } else {
+                    setError('Failed to fetch curUser profile');
+                }
             } finally {
                 setLoading(false);
             }

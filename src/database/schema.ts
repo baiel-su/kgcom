@@ -46,3 +46,38 @@ export const postGuests = pgTable(
   },
   (table) => [primaryKey({ columns: [table.postId, table.userId] })]
 );
+
+export const foodStores = pgTable("food_stores", {
+  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }), // Post creator
+  store_name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  address: text("address").notNull(),
+  phone: varchar("phone", { length: 15 }).notNull(),
+  image: text("image"),
+  instagramLink: text("instagram_link"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
+export const menu = pgTable(
+  "menu",
+  {
+    id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => foodStores.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    itemName: varchar("item_name", { length: 255 }).notNull(),
+    description: text("description"),
+    price: varchar("price", { length: 50 }).notNull(),
+    image: text("image"),
+  },
+  (table) => [primaryKey({ columns: [table.storeId, table.userId] })]
+);
