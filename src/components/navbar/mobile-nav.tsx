@@ -46,8 +46,8 @@ export function MobileNavbar({ userId }: MobileNavbarProps) {
             icon: <Home className="h-5 w-5" />,
         },
         {
-            label: "Iftars",
-            href: "/ramadan/iftar",
+            label: "Services",
+            href: "/services",
             icon: <Calendar className="h-5 w-5" />,
         },
         {
