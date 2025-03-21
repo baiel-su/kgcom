@@ -1,3 +1,4 @@
+'use server'
 import { createSupabaseServerClient } from "@/lib/auth/server";
 
 const createFoodStoreAction = async (formData: FormData, storeId?: string) => {

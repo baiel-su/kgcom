@@ -39,7 +39,7 @@ const formSchema = z.object({
   instagram: z.string().optional(),
   storeImage: z.any().refine((file) => file, {
     message: "Store image is required",
-  }),
+  }).optional(),
 });
 
 export default function CateringApplicationForm() {
@@ -61,55 +61,61 @@ export default function CateringApplicationForm() {
   const [, startTransition] = useTransition();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Here you would typically send the form data to your backend
-    console.log(values);
     try {
       // Ensure the storeImage field contains a file
-      if (!values.storeImage) {
-        toast({
-          title: "Error",
-          description: "Please upload an image",
-          variant: "destructive",
-        });
-        return;
-      }
+      // if (!values.storeImage) {
+      //   toast({
+      //     title: "Error",
+      //     description: "Please upload an image",
+      //     variant: "destructive",
+      //   });
+      //   return;
+      // }
 
-      // Upload the image using the uploadImage function
-      const { imageUrl, error } = await uploadImage({
-        file: values.storeImage,
-        bucket: "store-images",
-      });
+      // // Upload the image using the uploadImage function
+      // const { imageUrl, error } = await uploadImage({
+      //   file: values.storeImage,
+      //   bucket: "store-images",
+      // });
 
-      if (error) {
-        toast({
-          title: "Error",
-          description: "Failed to upload image. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
+      // if (error) {
+      //   toast({
+      //     title: "Error",
+      //     description: "Failed to upload image. Please try again.",
+      //     variant: "destructive",
+      //   });
+      //   return;
+      // }
 
-      // Log the uploaded image URL (or use it in your application logic)
-      console.log("Image uploaded successfully:", imageUrl);
+      // // Update the storeImage field with the uploaded image URL
+      // values.storeImage = imageUrl;
 
       // Proceed with saving the form data (e.g., send it to your backend)
-      // Example: Save the store data along with the image URL
-      const storeData = {
-        ...values,
-        storeImage: imageUrl, // Replace the file with the uploaded image URL
-      };
+      const formData = new FormData();
+      formData.append("store_name", values.store_name);
+      formData.append("description", values.description);
+      formData.append("address", values.address);
+      formData.append("phone", values.phone);
+      formData.append("instagram", values.instagram ?? "");
+      // formData.append("storeImage", values.storeImage);
 
-      console.log("Store data to save:", storeData);
-
-      toast({
-        title: "Store Created Successfully",
-        description: "Redirecting you to create your menu...",
+      startTransition(async () => {
+        const { errorMessage } = await createFoodStoreAction(formData);
+        if (!errorMessage) {
+          toast({
+            title: "Success",
+            description: "Successfully created a post",
+            variant: "default",
+          });
+          // router.push(`/catering/create-menu?storeId=mockStoreId`);
+        } else {
+          toast({
+            title: "Error",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        }
       });
-
-      // Redirect to the menu creation page
-      setTimeout(() => {
-        router.push(`/catering/create-menu?storeId=mockStoreId`);
-      }, 1500);
     } catch (err) {
       console.error("Error during form submission:", err);
       toast({
@@ -118,34 +124,6 @@ export default function CateringApplicationForm() {
         variant: "destructive",
       });
     }
-
-    const formData = new FormData();
-    formData.append("store_name", form.getValues().store_name);
-    formData.append("description", form.getValues().description);
-    formData.append("address", form.getValues().address);
-    formData.append("phone", form.getValues().phone);
-    formData.append("instagram", form.getValues().instagram ?? "");
-    formData.append("storeImage", form.getValues().storeImage[0]);
-
-    // console.log(form.getValues());
-    startTransition(async () => {
-      const { errorMessage } = await createFoodStoreAction(formData);
-      if (!errorMessage) {
-        // router.push("/");
-
-        toast({
-          title: "Success",
-          description: "Successfully created a post",
-          variant: "default",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      }
-    });
   }
 
   return (
