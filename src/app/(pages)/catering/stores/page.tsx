@@ -8,13 +8,14 @@ const Stores = () => {
       <h1 className="text-2xl font-bold text-center mt-4">Food Stores</h1>
       <p className="text-center mt-2">Explore our variety of food stores</p>
       <div className="w-full m-auto flex justify-center mt-4">
-        <Link href={"/catering/apply"} >
+        <Link href={"/catering/apply"}>
           <Button className="bg-purple-600 m-auto">Open Store! </Button>
         </Link>
       </div>
       {dummyStores.map((store, i) => (
         <div key={i} className="mt-4">
           <StoreCard
+            id={store.id}
             imageSrc={store.image}
             name={store.name}
             description={store.description}

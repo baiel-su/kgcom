@@ -5,12 +5,12 @@ const createFoodStoreAction = async (formData: FormData, storeId?: string) => {
     const supabase = await createSupabaseServerClient();
 
     const storeData = {
-        store_name: formData.get("name") as string,
+        store_name: formData.get("store_name") as string,
         description: formData.get("description") as string,
         address: formData.get("address") as string,
-        phone: formData.get("contactNumber") as string,
+        phone: formData.get("phone") as string,
         image: formData.get("image") as string,
-        instagramLink: formData.get("instagramLink") as string,
+        instagram_link: formData.get("instagram_link") as string,
     };
 
     if (!storeData.store_name || !storeData.address || !storeData.phone) {
@@ -55,7 +55,7 @@ const createFoodStoreAction = async (formData: FormData, storeId?: string) => {
                 address: storeData.address,
                 phone: storeData.phone,
                 image: storeData.image,
-                instagramLink: storeData.instagramLink,
+                instagram_link: storeData.instagram_link,
             },
             { onConflict: "id" } // Ensures updates occur when `id` exists
         );

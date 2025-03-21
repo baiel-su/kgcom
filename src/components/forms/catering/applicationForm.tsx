@@ -36,8 +36,8 @@ const formSchema = z.object({
   phone: z.string().min(10, {
     message: "Please enter a valid phone number.",
   }),
-  instagram: z.string().optional(),
-  storeImage: z.any().refine((file) => file, {
+  instagram_link: z.string().optional(),
+  image: z.any().refine((file) => file, {
     message: "Store image is required",
   }).optional(),
 });
@@ -53,8 +53,8 @@ export default function CateringApplicationForm() {
       description: "",
       address: "",
       phone: "",
-      instagram: "",
-      storeImage: undefined,
+      instagram_link: "",
+      image: undefined,
     },
   });
 
@@ -62,33 +62,33 @@ export default function CateringApplicationForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Ensure the storeImage field contains a file
-      // if (!values.storeImage) {
-      //   toast({
-      //     title: "Error",
-      //     description: "Please upload an image",
-      //     variant: "destructive",
-      //   });
-      //   return;
-      // }
+      // Ensure the image field contains a file
+      if (!values.image) {
+        toast({
+          title: "Error",
+          description: "Please upload an image",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // // Upload the image using the uploadImage function
-      // const { imageUrl, error } = await uploadImage({
-      //   file: values.storeImage,
-      //   bucket: "store-images",
-      // });
+      const { imageUrl, error } = await uploadImage({
+        file: values.image,
+        bucket: "store-images",
+      });
 
-      // if (error) {
-      //   toast({
-      //     title: "Error",
-      //     description: "Failed to upload image. Please try again.",
-      //     variant: "destructive",
-      //   });
-      //   return;
-      // }
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to upload image. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      // // Update the storeImage field with the uploaded image URL
-      // values.storeImage = imageUrl;
+      // // Update the image field with the uploaded image URL
+      values.image = imageUrl;
 
       // Proceed with saving the form data (e.g., send it to your backend)
       const formData = new FormData();
@@ -96,8 +96,8 @@ export default function CateringApplicationForm() {
       formData.append("description", values.description);
       formData.append("address", values.address);
       formData.append("phone", values.phone);
-      formData.append("instagram", values.instagram ?? "");
-      // formData.append("storeImage", values.storeImage);
+      formData.append("instagram_link", values.instagram_link ?? "");
+      formData.append("image", values.image);
 
       startTransition(async () => {
         const { errorMessage } = await createFoodStoreAction(formData);
@@ -107,7 +107,7 @@ export default function CateringApplicationForm() {
             description: "Successfully created a post",
             variant: "default",
           });
-          // router.push(`/catering/create-menu?storeId=mockStoreId`);
+          router.push(`/catering/create-menu?storeId=mockStoreId`);
         } else {
           toast({
             title: "Error",
@@ -197,7 +197,7 @@ export default function CateringApplicationForm() {
 
             <FormField
               control={form.control}
-              name="storeImage"
+              name="image"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Store Image</FormLabel>
@@ -205,7 +205,7 @@ export default function CateringApplicationForm() {
                     <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:bg-gray-50 transition-colors">
                       <input
                         type="file"
-                        id="storeImage"
+                        id="image"
                         accept="image/*"
                         className="hidden"
                         onChange={(e) => {
@@ -214,7 +214,7 @@ export default function CateringApplicationForm() {
                         }}
                       />
                       <label
-                        htmlFor="storeImage"
+                        htmlFor="image"
                         className="cursor-pointer w-full h-full"
                       >
                         {field.value ? (
@@ -253,7 +253,7 @@ export default function CateringApplicationForm() {
 
             <FormField
               control={form.control}
-              name="instagram"
+              name="instagram_link"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Instagram (Optional)</FormLabel>
