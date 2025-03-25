@@ -64,6 +64,7 @@ export const postGuests = pgTable(
 export const foodMenu = pgTable(
   "food_menu",
   {
+    id: uuid("id").notNull().primaryKey().defaultRandom(), // Unique identifier for each menu item
     foodStoreId: uuid("food_store_id")
       .notNull()
       .references(() => foodStores.id, {
@@ -72,11 +73,10 @@ export const foodMenu = pgTable(
       }),
     userId: uuid("user_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }), // Users who join the post (excluding creator)
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
     itemName: varchar("item_name", { length: 255 }).notNull(),
     description: text("description"),
     price: varchar("price", { length: 50 }).notNull(),
     image: text("image"),
-  },
-  (table) => [primaryKey({ columns: [table.foodStoreId, table.userId] })]
+  }
 );
