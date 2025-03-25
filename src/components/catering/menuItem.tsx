@@ -1,41 +1,53 @@
+import { IStore } from "@/hooks/use-fetch-single-store";
+import { Edit, Trash2 } from "lucide-react";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
-import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
-
-interface IMenuItem {
-  name: string;
-  description: string;
-  price: string;
-  image: string;
-}
 
 interface IMenuItemProps {
-  menuItem: IMenuItem;
+  menuItem: IStore;
 }
 
 const MenuItem = ({ menuItem }: IMenuItemProps) => {
   return (
-    <Card className=" shadow-md border border-gray-200  rounded-lg">
-      <CardContent className="p-2 px-3 flex items-center justify-between gap-4">
-        <div className="flex flex-col justify-between h-full">
-          <div>
-            <CardTitle className="text-xl font-semibold">
-              {menuItem.name}
-            </CardTitle>
-            <CardDescription className="text-gray-600 mt-1">
-              {menuItem.description}
-            </CardDescription>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {menuItem?.menu?.map((item) => (
+        <Card key={item.id} className="overflow-hidden">
+          <div className="h-48 bg-muted relative">
+            <Image
+              src={"/table.jpg"}
+              alt={item.item_name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-2 right-2 flex gap-2">
+              <Button
+                size="icon"
+                variant="secondary"
+                className="h-8 w-8 rounded-full"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button
+                size="icon"
+                variant="destructive"
+                className="h-8 w-8 rounded-full"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-          <p className="text-lg font-bold ">${menuItem.price}</p>
-        </div>
-        <Image
-          src={menuItem.image}
-          alt={menuItem.name}
-          width={120}
-          height={120}
-          className="w-28 h-28 object-cover rounded-lg border"
-        />
-      </CardContent>
-    </Card>
+          <CardHeader>
+            <div className="flex justify-between items-start">
+              <CardTitle>{item.item_name}</CardTitle>
+              <div className="text-lg font-bold">${item.price}</div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">{item.description}</p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 };
 

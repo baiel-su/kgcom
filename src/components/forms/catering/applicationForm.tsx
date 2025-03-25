@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import createFoodStoreAction from "@/actions/foodStoreActions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -20,8 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { uploadImage } from "@/lib/imageUploader";
+import { Spinner } from "@radix-ui/themes";
+import Image from "next/image";
 import { useTransition } from "react";
-import createFoodStoreAction from "@/actions/foodStoreActions";
 
 const formSchema = z.object({
   store_name: z.string().min(2, {
@@ -39,7 +41,7 @@ const formSchema = z.object({
   instagram_link: z.string().optional(),
   image: z.any().refine((file) => file, {
     message: "Store image is required",
-  }).optional(),
+  }),
 });
 
 export default function CateringApplicationForm() {
@@ -58,48 +60,48 @@ export default function CateringApplicationForm() {
     },
   });
 
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Ensure the image field contains a file
-      if (!values.image) {
-        toast({
-          title: "Error",
-          description: "Please upload an image",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // // Upload the image using the uploadImage function
-      const { imageUrl, error } = await uploadImage({
-        file: values.image,
-        bucket: "store-images",
-      });
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: "Failed to upload image. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // // Update the image field with the uploaded image URL
-      values.image = imageUrl;
-
-      // Proceed with saving the form data (e.g., send it to your backend)
-      const formData = new FormData();
-      formData.append("store_name", values.store_name);
-      formData.append("description", values.description);
-      formData.append("address", values.address);
-      formData.append("phone", values.phone);
-      formData.append("instagram_link", values.instagram_link ?? "");
-      formData.append("image", values.image);
-
       startTransition(async () => {
+        // Ensure the image field contains a file
+        if (!values.image) {
+          toast({
+            title: "Error",
+            description: "Please upload an image",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // // Upload the image using the uploadImage function
+        const { imageUrl, error } = await uploadImage({
+          file: values.image,
+          bucket: "store-images",
+        });
+
+        if (error) {
+          toast({
+            title: "Error",
+            description: "Failed to upload image. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // // Update the image field with the uploaded image URL
+        values.image = imageUrl;
+
+        // Proceed with saving the form data (e.g., send it to your backend)
+        const formData = new FormData();
+        formData.append("store_name", values.store_name);
+        formData.append("description", values.description);
+        formData.append("address", values.address);
+        formData.append("phone", values.phone);
+        formData.append("instagram_link", values.instagram_link ?? "");
+        formData.append("image", values.image);
+
         const { errorMessage } = await createFoodStoreAction(formData);
         if (!errorMessage) {
           toast({
@@ -107,7 +109,7 @@ export default function CateringApplicationForm() {
             description: "Successfully created a post",
             variant: "default",
           });
-          router.push(`/catering/create-menu?storeId=mockStoreId`);
+            router.push(`/catering/stores`);
         } else {
           toast({
             title: "Error",
@@ -127,8 +129,8 @@ export default function CateringApplicationForm() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardContent className="pt-6">
+    <Card className="border-none shadow-none md:border md:shadow p-0  w-full max-w-2xl mx-auto">
+      <CardContent className="pt-6 p-0 md:p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -188,7 +190,18 @@ export default function CateringApplicationForm() {
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your phone number" {...field} />
+                    <div className="flex justify-center items-center">
+                      <span className="text-sm rounded-md border border-input  px-3 py-[7px]  shadow-sm rounded-r-none border-r-0">
+                        +1
+                      </span>
+                      <Input
+                        // defaultValue={userData?.phone}
+                        placeholder="856984522"
+                        maxLength={10}
+                        {...field}
+                        className="rounded-l-none py-2"
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -219,7 +232,7 @@ export default function CateringApplicationForm() {
                       >
                         {field.value ? (
                           <div className="flex flex-col items-center">
-                            <img
+                            <Image
                               src={
                                 field.value
                                   ? URL.createObjectURL(field.value)
@@ -272,7 +285,8 @@ export default function CateringApplicationForm() {
               )}
             />
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending && <Spinner className="mr-2 h-4 w-4 animate-spin" />}
               Create Store & Continue to Menu
             </Button>
           </form>

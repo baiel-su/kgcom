@@ -46,6 +46,7 @@ export const foodStores = pgTable("food_stores", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
+
 export const postGuests = pgTable(
   "post_guests",
   {
@@ -64,6 +65,7 @@ export const postGuests = pgTable(
 export const foodMenu = pgTable(
   "food_menu",
   {
+    id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
     foodStoreId: uuid("food_store_id")
       .notNull()
       .references(() => foodStores.id, {
@@ -78,5 +80,4 @@ export const foodMenu = pgTable(
     price: varchar("price", { length: 50 }).notNull(),
     image: text("image"),
   },
-  (table) => [primaryKey({ columns: [table.foodStoreId, table.userId] })]
 );
