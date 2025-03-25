@@ -5,36 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1740634846771,
-      "tag": "0000_tearful_chat",
+      "when": 1742869978394,
+      "tag": "0000_long_george_stacy",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1740635488611,
-      "tag": "0001_stormy_thena",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1740717900067,
-      "tag": "0002_nappy_silvermane",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1740793303149,
-      "tag": "0003_solid_nomad",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1740793605772,
-      "tag": "0004_blue_hardball",
+      "when": 1742870119105,
+      "tag": "0001_absent_kid_colt",
       "breakpoints": true
     }
   ]

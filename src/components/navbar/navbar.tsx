@@ -18,6 +18,7 @@ import {
 import UserProfileComponent from "../userProfile/userProfile";
 import { MobileNavbar } from "./mobile-nav";
 import { ModeToggle } from "../dark-mode/dark-mode";
+import { useFetchcurUser } from "@/hooks/use-fetch-user";
 
 const links = [
   { href: "/", label: "Home" },
@@ -30,7 +31,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const { user } = useAuth();
-  console.log(user);
+  const {curUser} = useFetchcurUser(user?.id as string);
   const hideNavbar = ["/auth/sign-in", "/auth/sign-up"].includes(pathname);
 
   if (hideNavbar) {
@@ -52,7 +53,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <ModeToggle />
             {user ? (
-              <span>{user.email}</span>
+              <span>{curUser?.full_name}</span>
             ) : (
               <div className="flex items-center gap-2">
                 <Link

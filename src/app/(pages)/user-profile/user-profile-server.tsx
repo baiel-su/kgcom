@@ -1,7 +1,7 @@
 "use server"
 import { createSupabaseServerClient, getUser } from '@/lib/auth/server';
 
-const fetchUserProfile = async () => {
+const fetchUserProfileAction = async () => {
   try {
     const supabase = await createSupabaseServerClient();
     const user = await getUser();
@@ -32,4 +32,4 @@ const fetchUserProfile = async () => {
   }
 }
 
-export default fetchUserProfile;
+export default fetchUserProfileAction;
