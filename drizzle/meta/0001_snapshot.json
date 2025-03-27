@@ -1,6 +1,6 @@
 {
-  "id": "38fdb059-413b-4c7c-b07d-13da035fdfd1",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "697ac6f6-e303-4220-be03-0c8e1f4971e7",
+  "prevId": "38fdb059-413b-4c7c-b07d-13da035fdfd1",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -8,6 +8,13 @@
       "name": "food_menu",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
         "food_store_id": {
           "name": "food_store_id",
           "type": "uuid",
@@ -75,7 +82,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "food_menu_id_unique": {
+          "name": "food_menu_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

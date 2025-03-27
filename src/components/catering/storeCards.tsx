@@ -2,37 +2,51 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
 
-interface StoreCardProps {
-  imageSrc: string;
-  name: string;
-  description: string;
-  id: number;
+interface FoodStore {
+  id: string;
+  user?: {
+    full_name?: string;
+    user_id?: string;
+  };
+  store_name?: string;
+  description?: string;
+  address?: string;
+  phone?: string;
+  image?: string;
+  instagramLink?: string;
 }
 
-const StoreCard: React.FC<StoreCardProps> = ({
-  imageSrc,
-  name,
+const StoreCard: React.FC<FoodStore> = ({
+  id,
+  store_name,
   description,
-  id
+  image,
 }) => {
   return (
-    <div className="border rounded-lg shadow-md overflow-hidden text-start">
-      <Image
-        alt={name}
-        src={imageSrc}
-        layout="responsive"
-        width={400}
-        height={300}
-        className="object-cover"
-      />
-      <div className="p-4">
-        <h2 className="text-lg font-semibold ">{name}</h2>
-        <p>{description}</p>
-      </div>
-      <Link href={`/catering/stores/${id}`}>
-      <Button>See store</Button></Link>
-    </div>
+    <Card className="overflow-hidden ">
+      {image && (
+        <div className="relative w-[400px] h-[200px]">
+          <Image
+            alt={store_name as string}
+            src={image}
+            layout="fill"
+            objectFit="cover"
+            className="object-cover"
+          />
+        </div>
+      )}
+      <CardContent className="px-4">
+        <div className="pt-4 px-0">
+          <h2 className="text-lg font-semibold">{store_name}</h2>
+          <p>{description}</p>
+        </div>
+        <Link href={`/catering/stores/${id}`} >
+          <Button className="mt-4">See store</Button>
+        </Link>
+      </CardContent>
+    </Card>
   );
 };
 

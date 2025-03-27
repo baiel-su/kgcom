@@ -4,8 +4,7 @@ CREATE TABLE "food_menu" (
 	"item_name" varchar(255) NOT NULL,
 	"description" text,
 	"price" varchar(50) NOT NULL,
-	"image" text,
-	CONSTRAINT "food_menu_food_store_id_user_id_pk" PRIMARY KEY("food_store_id","user_id")
+	"image" text
 );
 --> statement-breakpoint
 CREATE TABLE "food_stores" (

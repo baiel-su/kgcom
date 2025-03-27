@@ -147,6 +147,7 @@ export default function SignUpPage() {
                   )}
                 />
               </div>
+              {/* Phone field */}
               <div className="space-y-2">
                 <FormField
                   control={form.control}
