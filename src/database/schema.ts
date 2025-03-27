@@ -80,5 +80,4 @@ export const foodMenu = pgTable(
     price: varchar("price", { length: 50 }).notNull(),
     image: text("image"),
   },
-  (table) => [primaryKey({ columns: [table.foodStoreId, table.userId] })]
 );

@@ -238,6 +238,8 @@ export default function CateringApplicationForm() {
                                   ? URL.createObjectURL(field.value)
                                   : "/placeholder.svg"
                               }
+                              width={300}
+                              height={100}
                               alt="Store preview"
                               className="w-full max-h-[200px] object-contain mb-2"
                             />
